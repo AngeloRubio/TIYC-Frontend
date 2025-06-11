@@ -49,11 +49,11 @@ export const APP_CONFIG = {
 ```bash
 # Modo desarrollo
 ng serve
-
+```
 
 La aplicación estará disponible en `http://localhost:4200`
 
-## **🎯 Flujo de Usuario**
+## **Flujo de Usuario
 
 ### **1. Autenticación**
 - Login con credenciales de profesor
