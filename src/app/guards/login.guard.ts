@@ -48,20 +48,17 @@ export class LoginGuard implements CanActivate {
             this.router.navigate([APP_CONFIG.AUTH_CONFIG.LOGIN_REDIRECT]);
           }
           
-          return false; // No permitir acceso al login
+          return false;
         } else {
           console.log('🔓 LoginGuard: Usuario no autenticado, permitiendo acceso al login');
-          return true; // Permitir acceso al login
+          return true; 
         }
       })
     );
   }
 }
 
-/**
- * 🚪 Función alternativa para usar con el nuevo sistema de guards funcionales
- * (Angular 15+)
- */
+
 export const loginGuardFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

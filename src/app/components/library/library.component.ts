@@ -158,7 +158,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * ✅ NUEVO: Obtener información completa del usuario
+   * Obtener información completa del usuario
    */
   getUserInfo(): string {
     if (!this.currentUser) {
@@ -183,7 +183,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * ✅ MEJORADO: Obtener nombre real del usuario
+   * Obtener nombre real del usuario
    */
   getUserDisplayName(): string {
     if (!this.currentUser) {

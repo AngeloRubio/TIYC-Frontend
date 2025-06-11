@@ -1,10 +1,10 @@
-// Configuración general de la aplicación TIYC
+
 
 export const APP_CONFIG = {
   // URLs de la API
   API_BASE_URL: 'http://localhost:5000/api',
   
-  // Endpoints específicos
+
   ENDPOINTS: {
     // Autenticación
     LOGIN: '/auth/login',
@@ -59,7 +59,7 @@ export const APP_CONFIG = {
     ITEMS_PER_PAGE: 12,
   },
   
-  // Información de la aplicación
+
   APP_INFO: {
     NAME: 'TIYC',
     FULL_NAME: 'Tú Inspiras, Yo Creo',

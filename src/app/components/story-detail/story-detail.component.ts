@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { StoryService } from '../../services/story.service';
 import { Story, Scenario } from '../../models/story.model';
 
-// ✅ Interfaz local para el cuento ilustrado
+
 interface LocalIllustratedStory {
   story: Story;
   scenarios: Scenario[];
@@ -74,11 +74,11 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     console.log('📖 Cargando cuento:', this.storyId);
     
     const storySub = this.storyService.getIllustratedStory(this.storyId).subscribe({
-      next: (response: any) => { // ✅ TEMPORAL: Usar 'any' para evitar conflictos de tipos
+      next: (response: any) => { 
         console.log('📦 Respuesta del backend:', response);
         
         if (response.success && response.story) {
-          // ✅ CORREGIDO: El backend devuelve story y scenarios directamente
+        
           this.storyData = {
             story: response.story,
             scenarios: response.scenarios || []
@@ -108,40 +108,23 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     
     this.subscriptions.add(storySub);
   }
-  
-  /**
-   * Navega de vuelta a la biblioteca
-   */
+
   goBack(): void {
     this.router.navigate(['/biblioteca']);
   }
   
-  /**
-   * Navega a crear un nuevo cuento
-   */
+
   createNew(): void {
     this.router.navigate(['/crear']);
   }
   
-  /**
-   * Exportar cuento a PDF (funcionalidad futura)
-   */
+
   exportToPDF(): void {
     console.log('📄 Exportar a PDF - Por implementar');
-    // TODO: Implementar exportación PDF
+ 
   }
   
-  /**
-   * Compartir cuento (funcionalidad futura)
-   */
-  shareStory(): void {
-    console.log('📤 Compartir cuento - Por implementar');
-    // TODO: Implementar funcionalidad de compartir
-  }
-  
-  /**
-   * Obtener URL completa de imagen
-   */
+
   getImageUrl(relativeUrl: string): string {
     return this.storyService.getImageUrl(relativeUrl);
   }
@@ -221,7 +204,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * ✨ NUEVO: Obtener título atractivo para cada capítulo
+   * Obtener título atractivo para cada capítulo
    */
   getChapterTitle(chapterNumber: number): string {
     const titles = [
@@ -242,7 +225,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * ✨ NUEVO: Dividir el contenido del cuento entre escenas para más narrativa
+   *: Dividir el contenido del cuento entre escenas para más narrativa
    */
   getStoryContentForScene(sceneIndex: number): string {
     if (!this.storyData?.story?.content) return '';
@@ -274,10 +257,10 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * ✨ NUEVO: Expandir descripción del escenario para más contenido
+   * Expandir descripción del escenario para más contenido
    */
   private expandScenarioDescription(description: string): string {
-    // Agregar contexto narrativo adicional basado en palabras clave
+  
     const expansions: {[key: string]: string} = {
       'aventura': 'La emoción se siente en el aire mientras nuestros personajes se embarcan en esta nueva experiencia. Cada paso los lleva más cerca de descubrimientos increíbles.',
       'bosque': 'Los árboles susurran secretos antiguos mientras la luz del sol se filtra entre las hojas, creando un ambiente mágico y misterioso.',

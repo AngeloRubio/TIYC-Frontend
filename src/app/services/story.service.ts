@@ -3,12 +3,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 
-import { 
-  Story, 
-  GenerateStoryRequest, 
-  ApiResponse, 
+import {
+  Story,
+  GenerateStoryRequest,
+  ApiResponse,
   PreviewStoryResponse,
-  IllustratedStory 
+  IllustratedStory
 } from '../models/story.model';
 import { APP_CONFIG } from '../config/app.config';
 
@@ -17,11 +17,11 @@ import { APP_CONFIG } from '../config/app.config';
 })
 export class StoryService {
   private readonly apiUrl = APP_CONFIG.API_BASE_URL;
-  
+
   // Estado reactivo para los cuentos
   private storiesSubject = new BehaviorSubject<Story[]>([]);
   public stories$ = this.storiesSubject.asObservable();
-  
+
   // Estado del preview actual
   private currentPreviewSubject = new BehaviorSubject<PreviewStoryResponse | null>(null);
   public currentPreview$ = this.currentPreviewSubject.asObservable();
@@ -29,43 +29,43 @@ export class StoryService {
   constructor(
     private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  ) { }
 
   /**
-   * NUEVO: Genera preview de cuento sin guardar en BD
+   *  Genera preview de cuento sin guardar en BD
    */
   generatePreview(request: GenerateStoryRequest): Observable<PreviewStoryResponse> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.PREVIEW_STORY}`;
-    
+
     return this.http.post<PreviewStoryResponse>(url, request, {
       headers: this.getHeaders()
     });
   }
 
   /**
-   * NUEVO: Guarda un preview en la biblioteca
+   * Guarda un preview en la biblioteca
    */
-  savePreviewedStory(previewData: PreviewStoryResponse): Observable<ApiResponse<{story_id: string}>> {
+  savePreviewedStory(previewData: PreviewStoryResponse): Observable<ApiResponse<{ story_id: string }>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.SAVE_STORY}`;
-    
-    return this.http.post<ApiResponse<{story_id: string}>>(url, previewData, {
+
+    return this.http.post<ApiResponse<{ story_id: string }>>(url, previewData, {
       headers: this.getHeaders()
     });
   }
 
   /**
-   * NUEVO: Regenera imagen de un escenario específico
+   *  Regenera imagen de un escenario específico
    */
   regenerateScenarioImage(
-    scenarioId: string, 
+    scenarioId: string,
     options?: {
       pedagogical_approach?: string;
       style?: string;
     }
-  ): Observable<ApiResponse<{new_image: any}>> {
+  ): Observable<ApiResponse<{ new_image: any }>> {
     const url = `${this.apiUrl}/regenerate-scenario-image/${scenarioId}`;
-    
-    return this.http.post<ApiResponse<{new_image: any}>>(url, options || {}, {
+
+    return this.http.post<ApiResponse<{ new_image: any }>>(url, options || {}, {
       headers: this.getHeaders()
     });
   }
@@ -75,7 +75,7 @@ export class StoryService {
    */
   generateCompleteStory(request: GenerateStoryRequest): Observable<PreviewStoryResponse> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.GET_STORY}`;
-    
+
     return this.http.post<PreviewStoryResponse>(url, request, {
       headers: this.getHeaders()
     });
@@ -86,7 +86,7 @@ export class StoryService {
    */
   getIllustratedStory(storyId: string): Observable<ApiResponse<IllustratedStory>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.GET_STORY}/${storyId}`;
-    
+
     return this.http.get<ApiResponse<IllustratedStory>>(url, {
       headers: this.getHeaders()
     });
@@ -97,19 +97,19 @@ export class StoryService {
    */
   getRecentStories(limit: number = 10): Observable<ApiResponse<Story[]>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.RECENT_STORIES}?limit=${limit}`;
-    
+
     return this.http.get<ApiResponse<Story[]>>(url, {
       headers: this.getHeaders()
     });
   }
 
-/**
-   * Obtiene cuentos de un profesor específico
-   */
-  getTeacherStories(teacherId: string, limit: number = 10): Observable<{success: boolean, stories?: Story[], error?: string}> {
+  /**
+     * Obtiene cuentos de un profesor específico
+     */
+  getTeacherStories(teacherId: string, limit: number = 10): Observable<{ success: boolean, stories?: Story[], error?: string }> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.TEACHER_STORIES}/${teacherId}?limit=${limit}`;
-    
-    return this.http.get<{success: boolean, stories?: Story[], error?: string}>(url, {
+
+    return this.http.get<{ success: boolean, stories?: Story[], error?: string }>(url, {
       headers: this.getHeaders()
     });
   }
@@ -175,7 +175,7 @@ export class StoryService {
   /**
    * UTILIDAD: Valida request antes de enviar
    */
-  validateStoryRequest(request: GenerateStoryRequest): {valid: boolean, errors: string[]} {
+  validateStoryRequest(request: GenerateStoryRequest): { valid: boolean, errors: string[] } {
     const errors: string[] = [];
 
     if (!request.context || request.context.trim().length < 10) {

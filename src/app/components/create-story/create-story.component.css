@@ -1,4 +1,4 @@
-/* ✅ Container principal - SIN CAMBIOS */
+
 .main-container {
   max-width: calc(100vw - 8rem);
   margin: 3rem auto 2rem auto;
@@ -6,7 +6,7 @@
   height: calc(100vh - 10rem);
 }
 
-/* ✅ Layout de dos columnas - SIN CAMBIOS */
+
 .two-column-layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -24,7 +24,7 @@
   }
 }
 
-/* ✅ Preview container - SIN CAMBIOS */
+
 .preview-container {
   display: flex;
   flex-direction: column;
@@ -98,13 +98,12 @@
   padding: 2rem;
 }
 
-/* ⭐ NUEVO: Flujo vertical centrado para el contenido del preview */
 .vertical-story-flow {
   max-width: 900px;
   margin: 0 auto;
 }
 
-/* ⭐ NUEVO: Sección de cada capítulo */
+
 .chapter-section {
   margin-bottom: 3rem;
   animation: fadeInChapter 0.6s ease-out both;
@@ -146,7 +145,7 @@
   }
 }
 
-/* ⭐ NUEVO: Header de capítulo vertical */
+
 .chapter-header-vertical {
   border-radius: 1rem 1rem 0 0;
   background: #96572a;
@@ -176,7 +175,7 @@
   }
 }
 
-/* ⭐ NUEVO: Párrafo del cuento */
+/*  Párrafo del cuento */
 .story-paragraph {
   background: white;
   border-bottom: 1px solid #f3f4f6;
@@ -194,7 +193,7 @@
   hyphens: auto;
 }
 
-/* ⭐ NUEVO: Container de imagen */
+
 .story-image-container {
   position: relative;
   overflow: hidden;
@@ -211,7 +210,7 @@
   transform: scale(1.02);
 }
 
-/* ⭐ NUEVO: Separador decorativo */
+/*  Separador decorativo */
 .chapter-separator {
   display: flex;
   align-items: center;
@@ -350,7 +349,7 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* ⭐ NUEVO: Hover effects mejorados para el preview */
+/*  Hover effects mejorados para el preview */
 .chapter-section {
   transition: all 0.3s ease-in-out;
 }
@@ -359,7 +358,7 @@
   transform: translateY(-2px);
 }
 
-/* ⭐ NUEVO: Estados de loading para imágenes */
+/*  Estados de loading para imágenes */
 .story-image-container .animate-pulse {
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -376,7 +375,7 @@
   }
 }
 
-/* ⭐ NUEVO: Responsive adicional para tablets */
+/*  Responsive adicional para tablets */
 @media (min-width: 640px) and (max-width: 1023px) {
   .vertical-story-flow {
     max-width: 600px;
@@ -387,7 +386,7 @@
   }
 }
 
-/* ⭐ NUEVO: Para pantallas grandes */
+/*  Para pantallas grandes */
 @media (min-width: 1280px) {
   .vertical-story-flow {
     max-width: 1000px;
@@ -403,7 +402,7 @@
   }
 }
 
-/* ✅ MANTENER: Todas las demás clases existentes que funcionan */
+/* Todas las demás clases existentes que funcionan */
 .chapter-container {
   margin-bottom: 2rem;
   border-radius: 1rem;
@@ -492,7 +491,7 @@
   z-index: 0;
 }
 
-/* ⭐ Badge de números de capítulo */
+/*  Badge de números de capítulo */
 .chapter-badge {
   background: #96572a;
   color: white;
@@ -500,7 +499,7 @@
   box-shadow: 0 4px 12px rgba(150, 87, 42, 0.25);
 }
 
-/* ⭐ Botones pedagógicos actualizados */
+/*  Botones pedagógicos actualizados */
 .pedagogical-buttons button.active,
 .pedagogical-buttons button[class*="bg-tiyc-brown"] {
   background-color: #96572a !important;
@@ -513,25 +512,25 @@
   box-shadow: 0 6px 16px rgba(150, 87, 42, 0.15);
 }
 
-/* ⭐ Elementos de progreso */
+/*  Elementos de progreso */
 .progress-bar {
   background: linear-gradient(to right, #96572a, #b8744d);
 }
 
-/* ⭐ Estados de loading con nueva paleta */
+/*  Estados de loading con nueva paleta */
 .loading-skeleton {
   background: linear-gradient(90deg, #f5f2e8 25%, #e8dcc0 50%, #f5f2e8 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
 }
 
-/* ⭐ Fondos alternativos */
+/*  Fondos alternativos */
 .bg-chapter-intro {
   background: #f5f2e8;
   border: 1px solid rgba(150, 87, 42, 0.1);
 }
 
-/* ⭐ Textos con nueva paleta */
+/*  Textos con nueva paleta */
 .text-tiyc-updated {
   color: #96572a;
 }
@@ -544,7 +543,7 @@
   color: #7a4521;
 }
 
-/* ⭐ Bordes con nueva paleta */
+/*  Bordes con nueva paleta */
 .border-tiyc-updated {
   border-color: #96572a;
 }
@@ -553,7 +552,7 @@
   border-color: rgba(150, 87, 42, 0.2);
 }
 
-/* ⭐ Shadows personalizadas actualizadas */
+/*  Shadows personalizadas actualizadas */
 .shadow-tiyc-updated {
   box-shadow: 0 4px 16px rgba(150, 87, 42, 0.15);
 }
@@ -566,7 +565,7 @@
   box-shadow: 0 12px 32px rgba(150, 87, 42, 0.25);
 }
 
-/* ⭐ Hover states actualizados */
+/*  Hover states actualizados */
 .hover-tiyc-updated:hover {
   background-color: #b8744d;
   color: white;
@@ -574,14 +573,14 @@
   box-shadow: 0 6px 20px rgba(150, 87, 42, 0.2);
 }
 
-/* ⭐ Focus states actualizados */
+/*  Focus states actualizados */
 .focus-tiyc-updated:focus {
   outline: none;
   border-color: #96572a;
   box-shadow: 0 0 0 3px rgba(150, 87, 42, 0.2);
 }
 
-/* ⭐ Elementos específicos del preview */
+/*  Elementos específicos del preview */
 .preview-container .bg-white {
   border: 1px solid rgba(150, 87, 42, 0.1);
 }
@@ -594,20 +593,20 @@
   background: #7a4521;
 }
 
-/* ⭐ Story paragraph styling */
+/*  Story paragraph styling */
 .story-paragraph {
   background: white;
   border-bottom: 1px solid rgba(150, 87, 42, 0.1);
 }
 
-/* ⭐ Elementos de estadísticas */
+/*  Elementos de estadísticas */
 .stats-card {
   background: white;
   border: 1px solid rgba(150, 87, 42, 0.1);
   box-shadow: 0 2px 8px rgba(150, 87, 42, 0.1);
 }
 
-/* ⭐ Botones de acción del preview */
+/*  Botones de acción del preview */
 .preview-actions button {
   transition: all 0.3s ease;
 }
@@ -617,7 +616,7 @@
   box-shadow: 0 4px 16px rgba(150, 87, 42, 0.2);
 }
 
-/* ⭐ Responsive: asegurar que los colores se vean bien en móvil */
+/*  Responsive: asegurar que los colores se vean bien en móvil */
 @media (max-width: 768px) {
 
   .chapter-header-vertical,

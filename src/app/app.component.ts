@@ -51,10 +51,10 @@ export class AppComponent implements OnInit {
     const currentUrl = this.router.url;
     
     if (!this.isAuthenticated && currentUrl !== '/login') {
-      // Usuario no autenticado y no está en login -> redirigir a login
+    
       this.router.navigate(['/login']);
     } else if (this.isAuthenticated && currentUrl === '/login') {
-      // Usuario autenticado y está en login -> redirigir a biblioteca
+ 
       this.router.navigate(['/biblioteca']);
     }
   }
