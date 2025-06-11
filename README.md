@@ -1,27 +1,104 @@
-# StoryIllustrationFrontend
+# **🎨 TIYC Frontend - "Tú Inspiras, Yo Creo"**
+Interfaz web moderna para la generación de cuentos ilustrados con IA
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+## **🎯 Descripción**
+TIYC Frontend es una aplicación web desarrollada en **Angular 18** que proporciona una interfaz intuitiva para que profesores generen cuentos ilustrados personalizados usando IA, con tres enfoques pedagógicos: **Montessori**, **Waldorf** y **Tradicional**.
 
-## Development server
+## **✨ Características Principales**
+- 🔐 **Autenticación JWT** para profesores
+- 📚 **Biblioteca personal** de cuentos ilustrados
+- 🎨 **Preview en tiempo real** durante la creación
+- 🔄 **Regeneración de imágenes** por escenario
+- 📱 **Diseño responsive** optimizado para tablets y móviles
+- 🎯 **Tres enfoques pedagógicos** diferenciados
+- 📖 **Visualización de cuentos** estilo libro digital
+- 💾 **Gestión de favoritos** y organización
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## **🚀 Instalación Rápida**
 
-## Code scaffolding
+### **1. Clonar el Repositorio**
+```bash
+git clone https://github.com/AngeloRubio/TIYC-Frontend.git
+cd TIYC-Frontend
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### **2. Instalar Node.js y Angular CLI**
+```bash
+# Verificar Node.js (versión 18+ recomendada)
+node --version
 
-## Build
+# Instalar Angular CLI globalmente
+npm install -g @angular/cli@18
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### **3. Instalar Dependencias**
+```bash
+npm install
+```
 
-## Running unit tests
+### **4. Configurar Variables de Entorno**
+Editar `src/app/config/app.config.ts`:
+```typescript
+export const APP_CONFIG = {
+  API_BASE_URL: 'http://localhost:5000/api', // URL de tu backend
+  // ... otras configuraciones
+};
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### **5. Ejecutar la Aplicación**
+```bash
+# Modo desarrollo
+ng serve
 
-## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+La aplicación estará disponible en `http://localhost:4200`
 
-## Further help
+## **🎯 Flujo de Usuario**
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### **1. Autenticación**
+- Login con credenciales de profesor
+- Verificación JWT automática
+- Redirección a biblioteca personal
+
+### **2. Creación de Cuentos**
+1. **Formulario de Creación**: Contexto, categoría, enfoque pedagógico
+2. **Preview en Tiempo Real**: Visualización de cuento + escenarios + imágenes
+3. **Regeneración**: Posibilidad de regenerar imágenes individuales
+4. **Guardado**: Almacenamiento en biblioteca personal
+
+### **3. Gestión de Biblioteca**
+- Vista grid de todos los cuentos creados
+- Filtros por categoría y enfoque pedagógico
+- Visualización detallada de cada cuento
+- Exportación a PDF (próximamente)
+
+
+## **🛠️ Tecnologías Utilizadas**
+
+### **Core**
+- **Angular 18**: Framework principal
+- **TypeScript**: Lenguaje de programación
+- **RxJS**: Programación reactiva
+- **Angular Router**: Navegación y guards
+
+### **UI/UX**
+- **Tailwind CSS**: Framework de estilos
+- **DaisyUI**: Componentes prediseñados
+- **Angular Animations**: Transiciones suaves
+- **Custom CSS**: Animaciones personalizadas
+
+### **Servicios**
+- **HttpClient**: Comunicación con API
+- **JWT**: Manejo de autenticación
+- **LocalStorage**: Persistencia local
+- **Guards**: Protección de rutas
+
+
+## **📄 Licencia**
+MIT License. Ver `LICENSE` para más detalles.
+
+## **👥 Equipo**
+Desarrollado para la **Unidad Educativa Santa Fe** como parte del proyecto de innovación educativa con IA.
+
+**Universidad de Guayaquil** - Facultad de Ciencias Fisica y Matematicas
+
