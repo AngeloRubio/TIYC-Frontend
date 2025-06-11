@@ -1,25 +1,5 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideClientHydration } from '@angular/platform-browser';
-import { provideHttpClient, withFetch } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { routes } from './app.routes';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes), 
-    provideClientHydration(),
-    
-    // HTTP Client para llamadas a la API
-    provideHttpClient(withFetch()),
-    
-    // Animaciones para transiciones suaves
-    importProvidersFrom(BrowserAnimationsModule),
-  ]
-};
-
 // Configuración general de la aplicación TIYC
+
 export const APP_CONFIG = {
   // URLs de la API
   API_BASE_URL: 'http://localhost:5000/api',
@@ -30,11 +10,10 @@ export const APP_CONFIG = {
     LOGIN: '/auth/login',
     PROFILE: '/auth/profile',
     
-    // Cuentos - ENDPOINTS ACTUALIZADOS
+    // Cuentos
     PREVIEW_STORY: '/preview-illustrated-story',
-    SAVE_STORY: '/save-previewed-story', 
+    SAVE_STORY: '/save-previewed-story',
     GET_STORY: '/illustrated-stories',
-    GENERATE_COMPLETE: '/generate-illustrated-story',
     RECENT_STORIES: '/stories/recent',
     TEACHER_STORIES: '/stories/teacher',
     
@@ -63,7 +42,7 @@ export const APP_CONFIG = {
     LOGOUT_REDIRECT: '/login',
   },
   
-  // Mensajes de loading específicos del proyecto
+  // Mensajes de loading
   LOADING_MESSAGES: [
     { emoji: '🌟', text: 'Despertando la imaginación...' },
     { emoji: '📚', text: 'Tejiendo historias encantadoras...' },

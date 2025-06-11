@@ -1,0 +1,636 @@
+/* ✅ Container principal - SIN CAMBIOS */
+.main-container {
+  max-width: calc(100vw - 8rem);
+  margin: 3rem auto 2rem auto;
+  min-height: calc(100vh - 10rem);
+  height: calc(100vh - 10rem);
+}
+
+/* ✅ Layout de dos columnas - SIN CAMBIOS */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  padding: 2.5rem;
+  height: 100%;
+  max-height: 100%;
+}
+
+@media (min-width: 1024px) {
+  .two-column-layout {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+}
+
+/* ✅ Preview container - SIN CAMBIOS */
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 0;
+}
+
+.preview-container>.bg-white {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ Header del preview - SIN CAMBIOS */
+.preview-header {
+  flex-shrink: 0;
+  padding: 1.5rem 2rem;
+  background: #96572a;
+  box-shadow: 0 4px 16px rgba(150, 87, 42, 0.15);
+}
+
+/* ✅ Scroll del preview - SIN CAMBIOS */
+.preview-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #d4a574 #f1f5f9;
+  padding: 0;
+}
+
+.preview-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.preview-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.preview-scroll::-webkit-scrollbar-thumb {
+  background: #d4a574;
+  border-radius: 4px;
+  border: 1px solid #f1f5f9;
+}
+
+.preview-scroll::-webkit-scrollbar-thumb:hover {
+  background: #8b4513;
+}
+
+/* ✅ Botones de preview - SIN CAMBIOS */
+.preview-actions {
+  flex-shrink: 0;
+  border-top: 1px solid #e5e7eb;
+  padding: 1.25rem 2rem;
+  background: white;
+}
+
+/* ✅ Estados centrados - SIN CAMBIOS */
+.preview-state-centered {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* ⭐ NUEVO: Flujo vertical centrado para el contenido del preview */
+.vertical-story-flow {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ⭐ NUEVO: Sección de cada capítulo */
+.chapter-section {
+  margin-bottom: 3rem;
+  animation: fadeInChapter 0.6s ease-out both;
+}
+
+.chapter-section:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.chapter-section:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chapter-section:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.chapter-section:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.chapter-section:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.chapter-section:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInChapter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ⭐ NUEVO: Header de capítulo vertical */
+.chapter-header-vertical {
+  border-radius: 1rem 1rem 0 0;
+  background: #96572a;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(150, 87, 42, 0.2);
+}
+
+.chapter-header-vertical::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+/* ⭐ NUEVO: Párrafo del cuento */
+.story-paragraph {
+  background: white;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.story-paragraph .prose {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.8;
+  color: #374151;
+}
+
+.story-paragraph .prose p {
+  margin-bottom: 0;
+  text-align: justify;
+  hyphens: auto;
+}
+
+/* ⭐ NUEVO: Container de imagen */
+.story-image-container {
+  position: relative;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.story-image-container img {
+  transition: all 0.3s ease-in-out;
+  display: block;
+  width: 100%;
+}
+
+.story-image-container:hover img {
+  transform: scale(1.02);
+}
+
+/* ⭐ NUEVO: Separador decorativo */
+.chapter-separator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.chapter-separator .h-px {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #d4a574, transparent);
+}
+
+/* ✅ RESPONSIVE: Móviles - SIN CAMBIOS */
+@media (max-width: 1023px) {
+  .main-container {
+    margin: 1rem auto;
+    height: auto;
+    min-height: auto;
+  }
+
+  .two-column-layout {
+    grid-template-rows: auto 1fr;
+    height: auto;
+    max-height: none;
+    padding: 1.5rem;
+  }
+
+  .preview-container {
+    height: 70vh;
+    min-height: 500px;
+    max-height: 80vh;
+  }
+
+  .vertical-story-flow {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .chapter-section {
+    margin-bottom: 2rem;
+  }
+
+  .story-paragraph {
+    padding: 1.5rem;
+  }
+
+  .story-paragraph .prose {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+/* ✅ FORMULARIO: SIN CAMBIOS - mantiene funcionalidad exacta */
+.form-column {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: hidden;
+}
+
+.form-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  overflow: auto;
+  padding: 0.5rem 0;
+  max-height: none;
+}
+
+.form-button-area {
+  flex-shrink: 0;
+  height: auto;
+  padding: 1.5rem 0 0 0;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .form-button-area {
+    justify-content: center;
+    margin-top: 2rem;
+  }
+}
+
+/* ✅ Campos del formulario - SIN CAMBIOS */
+.form-field textarea.input-tiyc {
+  height: 80px !important;
+  resize: none;
+}
+
+.form-field select.input-tiyc,
+.form-field input.input-tiyc {
+  height: 42px !important;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+}
+
+/* ✅ Botones pedagógicos - SIN CAMBIOS */
+.pedagogical-buttons {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.pedagogical-buttons button {
+  flex: 1;
+  padding: 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.75rem;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.pedagogical-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ⭐ NUEVO: Hover effects mejorados para el preview */
+.chapter-section {
+  transition: all 0.3s ease-in-out;
+}
+
+.chapter-section:hover {
+  transform: translateY(-2px);
+}
+
+/* ⭐ NUEVO: Estados de loading para imágenes */
+.story-image-container .animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* ⭐ NUEVO: Responsive adicional para tablets */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .vertical-story-flow {
+    max-width: 600px;
+  }
+
+  .story-paragraph {
+    padding: 2rem;
+  }
+}
+
+/* ⭐ NUEVO: Para pantallas grandes */
+@media (min-width: 1280px) {
+  .vertical-story-flow {
+    max-width: 1000px;
+  }
+
+  .story-paragraph {
+    padding: 3rem;
+  }
+
+  .story-paragraph .prose {
+    font-size: 1.125rem;
+    line-height: 1.9;
+  }
+}
+
+/* ✅ MANTENER: Todas las demás clases existentes que funcionan */
+.chapter-container {
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(150, 87, 42, 0.1);
+  transition: all 0.3s ease-in-out;
+  animation: fadeInChapter 0.6s ease-out both;
+}
+
+.chapter-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(150, 87, 42, 0.15);
+}
+
+.chapter-header {
+  background: #96572a;
+  padding: 1rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(150, 87, 42, 0.2);
+}
+
+.chapter-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter-image img {
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+@media (min-width: 1024px) {
+  .chapter-image img {
+    height: 350px;
+  }
+}
+
+.narrative-content {
+  padding: 1.5rem;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.narrative-content h4 {
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  color: #8b4513;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.narrative-content p {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ✅ Separador original - mantener por compatibilidad */
+.chapter-separator {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.chapter-separator::before {
+  content: '✦ ✦ ✦';
+  color: #96572a;
+  font-size: 1.2rem;
+  background: white;
+  padding: 0 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.chapter-separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #96572a, transparent);
+  z-index: 0;
+}
+
+/* ⭐ Badge de números de capítulo */
+.chapter-badge {
+  background: #96572a;
+  color: white;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(150, 87, 42, 0.25);
+}
+
+/* ⭐ Botones pedagógicos actualizados */
+.pedagogical-buttons button.active,
+.pedagogical-buttons button[class*="bg-tiyc-brown"] {
+  background-color: #96572a !important;
+  color: white;
+  box-shadow: 0 4px 16px rgba(150, 87, 42, 0.2);
+}
+
+.pedagogical-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(150, 87, 42, 0.15);
+}
+
+/* ⭐ Elementos de progreso */
+.progress-bar {
+  background: linear-gradient(to right, #96572a, #b8744d);
+}
+
+/* ⭐ Estados de loading con nueva paleta */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f5f2e8 25%, #e8dcc0 50%, #f5f2e8 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+/* ⭐ Fondos alternativos */
+.bg-chapter-intro {
+  background: #f5f2e8;
+  border: 1px solid rgba(150, 87, 42, 0.1);
+}
+
+/* ⭐ Textos con nueva paleta */
+.text-tiyc-updated {
+  color: #96572a;
+}
+
+.text-tiyc-light-updated {
+  color: #b8744d;
+}
+
+.text-tiyc-dark-updated {
+  color: #7a4521;
+}
+
+/* ⭐ Bordes con nueva paleta */
+.border-tiyc-updated {
+  border-color: #96572a;
+}
+
+.border-tiyc-light-updated {
+  border-color: rgba(150, 87, 42, 0.2);
+}
+
+/* ⭐ Shadows personalizadas actualizadas */
+.shadow-tiyc-updated {
+  box-shadow: 0 4px 16px rgba(150, 87, 42, 0.15);
+}
+
+.shadow-tiyc-lg-updated {
+  box-shadow: 0 8px 24px rgba(150, 87, 42, 0.2);
+}
+
+.shadow-tiyc-xl-updated {
+  box-shadow: 0 12px 32px rgba(150, 87, 42, 0.25);
+}
+
+/* ⭐ Hover states actualizados */
+.hover-tiyc-updated:hover {
+  background-color: #b8744d;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(150, 87, 42, 0.2);
+}
+
+/* ⭐ Focus states actualizados */
+.focus-tiyc-updated:focus {
+  outline: none;
+  border-color: #96572a;
+  box-shadow: 0 0 0 3px rgba(150, 87, 42, 0.2);
+}
+
+/* ⭐ Elementos específicos del preview */
+.preview-container .bg-white {
+  border: 1px solid rgba(150, 87, 42, 0.1);
+}
+
+.preview-scroll::-webkit-scrollbar-thumb {
+  background: #96572a;
+}
+
+.preview-scroll::-webkit-scrollbar-thumb:hover {
+  background: #7a4521;
+}
+
+/* ⭐ Story paragraph styling */
+.story-paragraph {
+  background: white;
+  border-bottom: 1px solid rgba(150, 87, 42, 0.1);
+}
+
+/* ⭐ Elementos de estadísticas */
+.stats-card {
+  background: white;
+  border: 1px solid rgba(150, 87, 42, 0.1);
+  box-shadow: 0 2px 8px rgba(150, 87, 42, 0.1);
+}
+
+/* ⭐ Botones de acción del preview */
+.preview-actions button {
+  transition: all 0.3s ease;
+}
+
+.preview-actions button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(150, 87, 42, 0.2);
+}
+
+/* ⭐ Responsive: asegurar que los colores se vean bien en móvil */
+@media (max-width: 768px) {
+
+  .chapter-header-vertical,
+  .chapter-header,
+  .preview-header {
+    background: #96572a;
+  }
+
+  .chapter-container {
+    box-shadow: 0 2px 12px rgba(150, 87, 42, 0.1);
+  }
+
+  .chapter-container:hover {
+    box-shadow: 0 4px 20px rgba(150, 87, 42, 0.15);
+  }
+}

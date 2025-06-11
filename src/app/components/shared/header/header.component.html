@@ -1,0 +1,114 @@
+<!-- Header optimizado TIYC  -->
+<header class="header-tiyc shadow-lg relative z-50">
+  <div class="flex items-center justify-between w-full">
+    
+    <!-- Logo TIYC - Lado izquierdo -->
+    <div class="logo-tiyc cursor-pointer flex items-center" (click)="goToLibrary()">
+
+      <img 
+        src="\assets\images\logo proyecto png.PNG" 
+        alt="TIYC Logo" 
+        class="h-10 w-auto object-contain"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+      >
+      <!-- Fallback text si la imagen no carga -->
+      <span class="hidden">TIYC</span>
+    </div>
+    
+    <!-- TODO EL CONTENIDO DEL LADO DERECHO -->
+    <div class="flex items-center space-x-4">
+      
+      <!-- Mi Biblioteca (desktop) -->
+      <nav class="hidden md:flex items-center">
+        <a 
+          class="nav-link"
+          (click)="goToLibrary()"
+          [class.active]="router.url === '/biblioteca'"
+        >
+          📚 Mi biblioteca
+        </a>
+      </nav>
+      
+      <!-- Información del usuario (visible en pantallas grandes) -->
+      <div class="hidden lg:flex flex-col text-right text-white text-sm" *ngIf="currentUser">
+        <span class="font-semibold">{{ getUserDisplayName() }}</span>
+        <span class="opacity-75 text-xs">{{ getUserEmail() }}</span>
+      </div>
+      
+      <!-- Menú de usuario con dropdown -->
+      <div class="relative user-menu">
+        <button 
+          class="user-menu-btn"
+          (click)="toggleUserMenu()"
+          [class.active]="isUserMenuOpen"
+        >
+          👨‍🏫 Profesor 
+          <span class="ml-1 transition-transform duration-200" 
+                [class.rotate-180]="isUserMenuOpen">
+            ▼
+          </span>
+        </button>
+        
+        <!-- Dropdown del menú de usuario -->
+        <div 
+          class="user-dropdown"
+          [class.show]="isUserMenuOpen"
+          [@slideDown]="getDropdownAnimationState()"
+        >
+          <!-- Información del usuario en móvil -->
+          <div class="lg:hidden px-4 py-3 border-b border-gray-100 bg-gray-50" *ngIf="currentUser">
+            <div class="font-semibold text-tiyc-brown text-sm">{{ getUserDisplayName() }}</div>
+            <div class="text-gray-600 text-xs">{{ getUserEmail() }}</div>
+          </div>
+          
+          <!-- Opciones del menú -->
+          <div class="py-2">
+            <button 
+              class="dropdown-item"
+              (click)="goToConfig()"
+            >
+              ⚙️ Configuración
+            </button>
+            
+            <div class="border-t border-gray-100 my-1"></div>
+            
+            <button 
+              class="dropdown-item text-red-600 hover:bg-red-50"
+              (click)="logout()"
+            >
+              🚪 Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Botón de menú móvil (hamburguesa) -->
+      <button class="md:hidden text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Navegación móvil - Mi Biblioteca alineada a la derecha -->
+  <nav class="md:hidden mt-4 pt-4 border-t border-white border-opacity-20">
+    <div class="flex justify-end">
+      <a 
+        class="nav-link-mobile"
+        (click)="goToLibrary()"
+        [class.active]="router.url === '/biblioteca'"
+      >
+        📚 Mi biblioteca
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- Overlay para cerrar dropdown al hacer clic fuera -->
+<div 
+  *ngIf="isUserMenuOpen"
+  class="fixed inset-0 z-40"
+  (click)="closeUserMenu()"
+></div>
