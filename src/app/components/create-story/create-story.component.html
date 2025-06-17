@@ -1,11 +1,10 @@
-
 <div class="min-h-screen bg-tiyc-light">
   <div class="container-tiyc main-container">
 
     <!-- Header compacto -->
     <div class="header-tiyc">
-      <h1 class="text-xl lg:text-2xl font-bold">¿Qué crearemos hoy?</h1>
-      <div class="text-sm opacity-75">Genera cuentos ilustrados únicos para tus estudiantes</div>
+      <h1 class="text-tiyc-title font-bold">¿Qué crearemos hoy?</h1>
+      <div class="text-tiyc-small opacity-75">Genera cuentos ilustrados únicos para tus estudiantes</div>
     </div>
 
     <!-- Layout de dos columnas -->
@@ -20,20 +19,20 @@
 
             <!-- Campo: Escribe tus ideas -->
             <div class="form-field">
-              <label class="block text-tiyc-primary font-bold mb-2 text-sm lg:text-base">
+              <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
                 💡 Escribe tus ideas
               </label>
               <textarea [(ngModel)]="formData.context" name="context"
                 placeholder="Describe la historia que quieres crear... Por ejemplo: 'Un pequeño robot curioso que quiere aprender sobre los colores del arco iris y va descubriendo cada color en una aventura por el bosque mágico.'"
                 class="input-tiyc resize-none" maxlength="500"></textarea>
-              <div class="text-right text-xs text-gray-500">
+              <div class="text-right text-tiyc-small text-gray-500">
                 {{ formData.context.length }}/500 caracteres
               </div>
             </div>
 
             <!-- Campo: Categoría -->
             <div class="form-field">
-              <label class="block text-tiyc-primary font-bold mb-2 text-sm lg:text-base">
+              <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
                 📚 Categoría del cuento
               </label>
               <input [(ngModel)]="formData.category" name="category" type="text"
@@ -42,7 +41,7 @@
 
             <!-- Campo: Grado Escolar -->
             <div class="form-field">
-              <label class="block text-tiyc-primary font-bold mb-2 text-sm lg:text-base">
+              <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
                 🎓 Grado escolar
               </label>
               <select [(ngModel)]="formData.target_age" name="target_age" class="input-tiyc">
@@ -54,7 +53,7 @@
 
             <!-- Enfoques Pedagógicos -->
             <div class="form-field">
-              <label class="block text-tiyc-primary font-bold mb-2 text-sm lg:text-base">
+              <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
                 🎯 Enfoque pedagógico
               </label>
               <div class="pedagogical-buttons">
@@ -65,8 +64,8 @@
                   [class.bg-gray-100]="formData.pedagogical_approach !== approach.key"
                   [class.text-tiyc-primary]="formData.pedagogical_approach !== approach.key"
                   class="transition-all duration-300 hover:shadow-md">
-                  <div class="font-bold">{{ approach.label }}</div>
-                  <div class="text-xs mt-1 opacity-75">{{ approach.description }}</div>
+                  <div class="font-bold text-tiyc-body">{{ approach.label }}</div>
+                  <div class="text-tiyc-small mt-1 opacity-75">{{ approach.description }}</div>
                 </button>
               </div>
             </div>
@@ -75,7 +74,7 @@
             <div *ngIf="validationErrors.length > 0"
               class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
               <ul class="list-disc list-inside space-y-1">
-                <li *ngFor="let error of validationErrors">{{ error }}</li>
+                <li *ngFor="let error of validationErrors" class="text-tiyc-body">{{ error }}</li>
               </ul>
             </div>
 
@@ -87,7 +86,7 @@
               [class.opacity-50]="!isFormValid() || isGenerating"
               [class.cursor-not-allowed]="!isFormValid() || isGenerating"
               class="btn-tiyc-primary w-full uppercase tracking-wide">
-              <span *ngIf="!isGenerating">✨ GENERAR CUENTO</span>
+              <span *ngIf="!isGenerating" class="text-tiyc-subhead">✨ GENERAR CUENTO</span>
               <span *ngIf="isGenerating" class="flex items-center justify-center">
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                   viewBox="0 0 24 24">
@@ -96,7 +95,7 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                   </path>
                 </svg>
-                GENERANDO...
+                <span class="text-tiyc-body">GENERANDO...</span>
               </span>
             </button>
           </div>
@@ -108,32 +107,31 @@
       <div class="preview-container">
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden h-full flex flex-col">
 
-
           <div *ngIf="previewState.status === 'idle'" class="preview-state-centered">
             <div class="text-center max-w-sm">
               <div class="text-5xl lg:text-6xl mb-6 animate-float">📖</div>
-              <h3 class="text-tiyc-primary font-bold text-lg lg:text-xl mb-4">Vista previa del cuento</h3>
-              <p class="text-gray-600 mb-6 leading-relaxed text-sm lg:text-base">
+              <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">Vista previa del cuento</h3>
+              <p class="text-gray-600 mb-6 leading-relaxed text-tiyc-body">
                 Aquí aparecerá tu cuento ilustrado una vez que completes el formulario y hagas clic en "Generar Cuento".
               </p>
               <div class="bg-tiyc-light p-4 rounded-xl">
-                <div class="text-sm text-tiyc-primary">
+                <div class="text-tiyc-body text-tiyc-primary">
                   💡 <strong>Consejo:</strong> Sé específico en tus ideas para obtener mejores resultados
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- ✅ Estado Loading -->
+          <!-- Estado Loading -->
           <div *ngIf="previewState.status === 'generating'" class="preview-state-centered">
             <div class="text-center max-w-sm w-full">
               <div class="text-5xl lg:text-6xl mb-6 animate-bounce">✨</div>
-              <h3 class="text-tiyc-primary font-bold text-lg lg:text-xl mb-4">¡Creando magia literaria!</h3>
+              <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Creando magia literaria!</h3>
 
               <!-- Mensaje de loading dinámico -->
               <div *ngIf="currentLoadingMessage" class="mb-6">
                 <div class="text-3xl lg:text-4xl mb-3 animate-pulse">{{ currentLoadingMessage.emoji }}</div>
-                <div class="text-tiyc-accent font-semibold text-base lg:text-lg">{{ currentLoadingMessage.text }}</div>
+                <div class="text-tiyc-accent font-semibold text-tiyc-subhead">{{ currentLoadingMessage.text }}</div>
               </div>
 
               <!-- Barra de progreso -->
@@ -141,41 +139,39 @@
                 <div
                   class="bg-tiyc-primary h-3 lg:h-4 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
                   [style.width.%]="getProgress().percentage">
-                  <span class="text-white text-xs font-bold" *ngIf="getProgress().percentage > 20">
+                  <span class="text-white text-tiyc-small font-bold" *ngIf="getProgress().percentage > 20">
                     {{getProgress().percentage}}%
                   </span>
                 </div>
               </div>
 
-              <div class="text-sm text-gray-600 font-medium">
+              <div class="text-tiyc-body text-gray-600 font-medium">
                 {{ getProgress().current }} de {{ getProgress().total }} imágenes generadas
               </div>
 
-              <div class="text-xs text-gray-500 mt-2">
+              <div class="text-tiyc-small text-gray-500 mt-2">
                 ⏱️ Esto puede tomar 1-2 minutos
               </div>
             </div>
           </div>
 
-          <!-- ✅ Estado Error -->
+          <!-- Estado Error -->
           <div *ngIf="previewState.status === 'error'" class="preview-state-centered">
             <div class="text-center max-w-sm">
               <div class="text-5xl lg:text-6xl mb-6">😔</div>
-              <h3 class="text-red-600 font-bold text-lg lg:text-xl mb-4">¡Ups! Algo salió mal</h3>
-              <p class="text-gray-600 mb-6 leading-relaxed text-sm lg:text-base">{{ previewState.error }}</p>
+              <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">¡Ups! Algo salió mal</h3>
+              <p class="text-gray-600 mb-6 leading-relaxed text-tiyc-body">{{ previewState.error }}</p>
               <button (click)="onGenerateStory()" class="btn-tiyc-secondary px-6 py-3">
                 🔄 Intentar de nuevo
               </button>
             </div>
           </div>
 
-    
           <div *ngIf="previewState.status === 'ready' && previewState.story" class="flex-1 flex flex-col h-full">
 
-          
             <div class="bg-tiyc-primary text-white p-6 shadow-tiyc">
-              <h1 class="text-xl lg:text-2xl font-bold mb-3 text-center">{{ previewState.story.title }}</h1>
-              <div class="flex flex-wrap justify-center gap-2 lg:gap-3 text-xs lg:text-sm">
+              <h1 class="text-tiyc-title font-bold mb-3 text-center">{{ previewState.story.title }}</h1>
+              <div class="flex flex-wrap justify-center gap-2 lg:gap-3 text-tiyc-small">
                 <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
                   📚 {{ previewState.story.category }}
                 </span>
@@ -185,51 +181,49 @@
               </div>
             </div>
 
-          
             <div class="preview-scroll">
 
               <!-- Introducción del preview -->
               <div class="p-4 lg:p-6 bg-tiyc-light">
                 <div class="text-center mb-6">
                   <div class="text-4xl lg:text-5xl mb-4 animate-float">📖</div>
-                  <h2 class="text-tiyc-primary font-bold text-lg lg:text-xl mb-4">¡Tu cuento está listo!</h2>
-                  <p class="text-gray-600 text-sm max-w-md mx-auto leading-relaxed">
+                  <h2 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Tu cuento está listo!</h2>
+                  <p class="text-gray-600 text-tiyc-body max-w-md mx-auto leading-relaxed">
                     Revisa cada capítulo de tu historia. Puedes cambiar cualquier imagen que no te guste antes de
                     guardar en tu biblioteca.
                   </p>
 
                   <!-- Estadísticas del preview -->
-                  <div class="flex justify-center gap-4 lg:gap-6 mt-4 text-sm">
+                  <div class="flex justify-center gap-4 lg:gap-6 mt-4 text-tiyc-body">
                     <div class="text-center">
-                      <div class="font-bold text-base lg:text-lg text-tiyc-primary">{{ previewState.scenarios.length }}
+                      <div class="font-bold text-tiyc-subhead text-tiyc-primary">{{ previewState.scenarios.length }}
                       </div>
-                      <div class="text-gray-500 text-xs">Capítulos</div>
+                      <div class="text-gray-500 text-tiyc-small">Capítulos</div>
                     </div>
                     <div class="text-center">
-                      <div class="font-bold text-base lg:text-lg text-tiyc-primary">{{ getGeneratedImagesCount() }}
+                      <div class="font-bold text-tiyc-subhead text-tiyc-primary">{{ getGeneratedImagesCount() }}
                       </div>
-                      <div class="text-gray-500 text-xs">Imágenes</div>
+                      <div class="text-gray-500 text-tiyc-small">Imágenes</div>
                     </div>
                     <div class="text-center">
-                      <div class="font-bold text-base lg:text-lg text-tiyc-primary">{{ getContentWordCount() }}</div>
-                      <div class="text-gray-500 text-xs">Palabras</div>
+                      <div class="font-bold text-tiyc-subhead text-tiyc-primary">{{ getContentWordCount() }}</div>
+                      <div class="text-gray-500 text-tiyc-small">Palabras</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!--  FLUJO VERTICAL: PÁRRAFO → IMAGEN -->
+              <!-- FLUJO VERTICAL: PÁRRAFO → IMAGEN -->
               <div class="vertical-story-flow max-w-4xl mx-auto px-4 lg:px-6 pb-6">
 
-       
                 <div *ngFor="let scenario of previewState.scenarios; let i = index" class="chapter-section mb-8">
 
                   <!-- Header del capítulo -->
                   <div class="bg-tiyc-primary text-white rounded-t-xl p-4 mb-0 shadow-tiyc">
                     <div class="flex justify-between items-center">
-                      <h3 class="font-bold text-lg lg:text-xl flex items-center gap-3">
+                      <h3 class="font-bold text-tiyc-subhead flex items-center gap-3">
                         <span
-                          class="bg-tiyc-primary-dark w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center font-bold text-sm lg:text-lg">
+                          class="bg-tiyc-primary-dark w-8 h-8 lg:w-10 lg:h-10 rounded-full flex items-center justify-center font-bold text-tiyc-body">
                           {{ i + 1 }}
                         </span>
                         <span>{{ getChapterTitle(i + 1) }}</span>
@@ -237,7 +231,7 @@
 
                       <!-- Botón Cambiar Imagen -->
                       <button *ngIf="scenario.image" (click)="onChangeImage(scenario.id)"
-                        class="bg-tiyc-primary-light hover:bg-tiyc-secondary px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 group"
+                        class="bg-tiyc-primary-light hover:bg-tiyc-secondary px-4 py-2 rounded-full text-tiyc-small font-semibold transition-all duration-200 flex items-center gap-2 group"
                         title="Generar nueva imagen para este capítulo">
                         <span class="transform group-hover:rotate-180 transition-transform duration-300">🔄</span>
                         <span>Cambiar Imagen</span>
@@ -248,16 +242,16 @@
                   <!-- Container con sombra para párrafo + imagen -->
                   <div class="bg-white rounded-b-xl shadow-lg overflow-hidden">
 
-                    <!--  PÁRRAFO (del cuento dividido) -->
+                    <!-- PÁRRAFO (del cuento dividido) -->
                     <div class="story-paragraph p-6 lg:p-8">
                       <div class="prose prose-lg max-w-none">
-                        <p class="text-gray-800 leading-relaxed text-base lg:text-lg font-serif">
+                        <p class="text-gray-800 leading-relaxed text-tiyc-subhead font-serif">
                           {{ getStoryParagraphForChapter(i) }}
                         </p>
                       </div>
                     </div>
 
-                    <!--  IMAGEN -->
+                    <!-- IMAGEN -->
                     <div class="story-image-container">
 
                       <!-- Imagen cargada -->
@@ -267,13 +261,12 @@
                           class="w-full h-64 lg:h-80 xl:h-96 object-cover transition-all duration-300 hover:scale-105"
                           (error)="onImageError($event, scenario)">
 
-                     
                         <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent">
                         </div>
 
                         <!-- Badge del número de capítulo -->
                         <div
-                          class="absolute bottom-4 right-4 bg-tiyc-primary text-white w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg border-4 border-white">
+                          class="absolute bottom-4 right-4 bg-tiyc-primary text-white w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center font-bold text-tiyc-subhead shadow-lg border-4 border-white">
                           {{ i + 1 }}
                         </div>
                       </div>
@@ -288,8 +281,8 @@
                         <!-- Contenido de loading -->
                         <div class="text-center relative z-10">
                           <div class="text-4xl lg:text-5xl mb-4 animate-bounce">🎨</div>
-                          <div class="text-tiyc-primary font-bold text-lg lg:text-xl mb-2">Creando imagen...</div>
-                          <div class="text-gray-600 text-sm">Capítulo {{ i + 1 }}</div>
+                          <div class="text-tiyc-primary font-bold text-tiyc-subhead mb-2">Creando imagen...</div>
+                          <div class="text-gray-600 text-tiyc-body">Capítulo {{ i + 1 }}</div>
 
                           <!-- Barra de progreso simulada -->
                           <div class="w-32 lg:w-40 h-2 bg-gray-200 rounded-full mt-4 mx-auto overflow-hidden">
@@ -301,7 +294,6 @@
 
                   </div>
 
-               
                   <div *ngIf="i < previewState.scenarios.length - 1" class="chapter-separator my-8">
                     <div class="flex items-center justify-center">
                       <div class="h-px bg-tiyc-muted w-full max-w-xs"></div>
@@ -318,8 +310,8 @@
                 <div
                   class="bg-tiyc-light rounded-xl lg:rounded-2xl p-6 lg:p-8 shadow-tiyc max-w-xl mx-auto border border-tiyc-muted border-opacity-30">
                   <div class="text-4xl lg:text-6xl mb-4 lg:mb-6 animate-bounce">🌟</div>
-                  <h3 class="text-tiyc-primary font-bold text-lg lg:text-2xl mb-4">¡Preview Completo!</h3>
-                  <p class="text-gray-700 text-sm lg:text-lg mb-4 lg:mb-6 leading-relaxed">
+                  <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Preview Completo!</h3>
+                  <p class="text-gray-700 text-tiyc-body mb-4 lg:mb-6 leading-relaxed">
                     Tu cuento está listo para ser guardado en tu biblioteca. ¿Te gusta cómo quedó?
                   </p>
 
@@ -328,23 +320,23 @@
                     class="bg-white rounded-lg lg:rounded-xl p-4 lg:p-6 shadow-sm mb-4 lg:mb-6 border border-tiyc-muted border-opacity-20">
                     <div class="grid grid-cols-3 gap-3 lg:gap-4 text-center">
                       <div>
-                        <div class="text-lg lg:text-2xl font-bold text-tiyc-primary">{{ previewState.scenarios.length }}
+                        <div class="text-tiyc-subhead font-bold text-tiyc-primary">{{ previewState.scenarios.length }}
                         </div>
-                        <div class="text-gray-600 text-xs lg:text-sm">Capítulos</div>
+                        <div class="text-gray-600 text-tiyc-small">Capítulos</div>
                       </div>
                       <div>
-                        <div class="text-lg lg:text-2xl font-bold text-tiyc-success">{{ getGeneratedImagesCount() }}
+                        <div class="text-tiyc-subhead font-bold text-tiyc-success">{{ getGeneratedImagesCount() }}
                         </div>
-                        <div class="text-gray-600 text-xs lg:text-sm">Imágenes</div>
+                        <div class="text-gray-600 text-tiyc-small">Imágenes</div>
                       </div>
                       <div>
-                        <div class="text-lg lg:text-2xl font-bold text-tiyc-info">{{ getContentWordCount() }}</div>
-                        <div class="text-gray-600 text-xs lg:text-sm">Palabras</div>
+                        <div class="text-tiyc-subhead font-bold text-tiyc-info">{{ getContentWordCount() }}</div>
+                        <div class="text-gray-600 text-tiyc-small">Palabras</div>
                       </div>
                     </div>
                   </div>
 
-                  <p class="text-gray-600 text-xs lg:text-sm">
+                  <p class="text-gray-600 text-tiyc-small">
                     💡 <strong>Tip:</strong> Puedes cambiar cualquier imagen usando el botón "Cambiar Imagen" antes de
                     guardar.
                   </p>
@@ -353,16 +345,15 @@
 
             </div>
 
-       
             <div class="preview-actions">
               <div class="flex flex-col sm:flex-row gap-2 lg:gap-3">
                 <button (click)="onExportToPDF()"
-                  class="btn-tiyc-secondary flex-1 flex items-center justify-center gap-2 text-sm lg:text-base py-2 lg:py-3">
+                  class="btn-tiyc-secondary flex-1 flex items-center justify-center gap-2 text-tiyc-body py-2 lg:py-3">
                   📄 <span>Exportar PDF</span>
                 </button>
                 <button (click)="onSaveToLibrary()" [disabled]="!canSave() || isSaving()"
                   [class.opacity-50]="!canSave() || isSaving()"
-                  class="btn-tiyc-primary flex-1 flex items-center justify-center gap-2 text-sm lg:text-base py-2 lg:py-3">
+                  class="btn-tiyc-primary flex-1 flex items-center justify-center gap-2 text-tiyc-body py-2 lg:py-3">
                   <span *ngIf="!isSaving()" class="flex items-center gap-2">
                     📚 <span>Guardar en Biblioteca</span>
                   </span>
@@ -381,12 +372,11 @@
 
           </div>
 
-       
           <div *ngIf="previewState.status === 'ready' && !previewState.story" class="preview-state-centered">
             <div class="text-center max-w-sm">
               <div class="text-5xl lg:text-6xl mb-6">⚠️</div>
-              <h3 class="text-tiyc-warning font-bold text-lg lg:text-xl mb-4">Error en el cuento</h3>
-              <p class="text-gray-600 mb-6 leading-relaxed text-sm lg:text-base">
+              <h3 class="text-tiyc-warning font-bold text-tiyc-heading mb-4">Error en el cuento</h3>
+              <p class="text-gray-600 mb-6 leading-relaxed text-tiyc-body">
                 El cuento se generó pero no se pudieron cargar los datos correctamente.
               </p>
               <button (click)="onGenerateStory()" class="btn-tiyc-primary px-6 py-3">

@@ -1,62 +1,22 @@
-
-.header-tiyc {
-  @apply px-4 sm:px-6 lg:px-8 py-3 sm:py-4;
-  background-color: #96572a; /* Color sólido de la nueva paleta */
-}
-
-
-.header-tiyc > div {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-
+/* Header component - Optimizado para TypeScale */
 .nav-link {
   @apply text-white hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-medium;
 }
-
 
 .nav-link:hover {
   transform: translateY(-1px);
 }
 
-
 .nav-link-mobile {
   @apply text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-lg cursor-pointer transition-all duration-300 block;
 }
 
-
-.logo-tiyc {
-  background-color: white;
-  color: #96572a; /* Color principal de la nueva paleta */
-  @apply px-4 py-2 rounded-xl font-bold text-xl shadow-md flex items-center gap-2 transition-all duration-300;
-}
-
-.logo-tiyc:hover {
-  transform: scale(1.05);
-  @apply shadow-lg;
-}
-
-
-.logo-tiyc img {
-  @apply h-8 w-auto object-contain;
-  max-width: 100px;
-}
-
 .user-menu-btn {
-  background-color: #7a4521; 
-  @apply text-white px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-medium flex items-center hover:bg-opacity-90 hover:shadow-md;
-}
-
-.user-menu-btn.active {
-  @apply bg-opacity-90 shadow-md;
+  @apply bg-tiyc-primary-dark text-white px-4 py-2 rounded-xl cursor-pointer transition-all duration-300 font-medium flex items-center hover:bg-opacity-90 hover:shadow-md;
 }
 
 .user-menu-btn:hover {
   transform: translateY(-1px);
-  background-color: #5f3318; 
 }
 
 .user-dropdown {
@@ -67,10 +27,9 @@
   @apply opacity-100 visible scale-100;
 }
 
-
 .dropdown-item {
-  color: #96572a; 
   @apply w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors duration-200 cursor-pointer font-medium flex items-center space-x-2;
+  color: #96572a;
 }
 
 .dropdown-item:first-child {
@@ -85,87 +44,9 @@
   transform: translateX(2px);
 }
 
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.user-dropdown.show {
-  animation: slideDown 0.2s ease-out;
-}
-
-
+/* Responsive */
 @media (max-width: 768px) {
   .user-dropdown {
     @apply left-0 right-0 mx-4 min-w-0;
   }
-  
-  /* Logo más pequeño en móvil */
-  .logo-tiyc img {
-    @apply h-6;
-    max-width: 80px;
-  }
-}
-
-
-.nav-link:focus,
-.user-menu-btn:focus,
-.dropdown-item:focus {
-  @apply outline-none ring-2 ring-white ring-opacity-50;
-}
-
-
-.user-menu-btn::after {
-  content: '';
-  @apply absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-white transition-all duration-200;
-}
-
-.user-menu-btn.active::after {
-  @apply w-4/5;
-}
-
-
-.user-menu {
-  @apply relative;
-}
-
-.user-dropdown {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
-}
-
-
-.user-menu-btn span {
-  transition: transform 0.2s ease-in-out;
-}
-
-
-.nav-link:hover,
-.nav-link-mobile:hover {
-  backdrop-filter: blur(10px);
-}
-
-.user-dropdown {
-  backdrop-filter: blur(10px);
-  @apply bg-white bg-opacity-95;
-}
-
-
-.logo-tiyc {
-  min-height: 44px; 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.logo-tiyc span {
-  font-size: 1.25rem;
-  font-weight: bold;
 }

@@ -1,18 +1,14 @@
-
 <div class="min-h-screen bg-tiyc-light flex items-center justify-center p-4">
   <div class="w-full max-w-4xl bg-white bg-opacity-95 rounded-2xl overflow-hidden shadow-tiyc-xl">
 
-
 <div
   class="bg-tiyc-primary px-6 py-4 flex flex-col md:flex-row justify-between items-center text-white shadow-tiyc">
-  
   
   <div class="mb-2 md:mb-0">
     <img src="assets/images/logo proyecto png.PNG" alt="Logo TIYC" class="h-16 w-auto object-contain" />
   </div>
   
- 
-  <div class="text-sm font-bold uppercase tracking-wide text-center md:text-right">
+  <div class="text-tiyc-small font-bold uppercase tracking-wide text-center md:text-right">
     HOLA, ¿TÚ IMAGINAS YO CREO?
     TUS IDEAS SE HACEN REALIDAD
   </div>
@@ -58,12 +54,11 @@
         </div>
       </div>
 
-
 <div class="bg-white p-8 flex flex-col justify-center h-full items-center">
   <div class="w-full max-w-md">
     
     <div class="text-center mb-8">
-      <div class="block text-tiyc-primary font-bold mb-2 text-sm uppercase tracking-wide">
+      <div class="block text-tiyc-primary font-bold mb-2 text-tiyc-small uppercase tracking-wide">
         Unidad Educativa Santa Fe
       </div>
     </div>
@@ -71,42 +66,40 @@
     <!-- Mensaje de error -->
     <div *ngIf="errorMessage"
          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-4 shadow-sm">
-      {{ errorMessage }}
+      <div class="text-tiyc-body">{{ errorMessage }}</div>
       <button (click)="clearError()"
               class="float-right text-red-500 hover:text-red-700 transition-colors duration-200">
       </button>
     </div>
 
- 
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="space-y-6">
       <!-- Campo Usuario -->
       <div>
-        <label class="block text-tiyc-primary font-bold mb-2 text-sm uppercase tracking-wide">
+        <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body uppercase tracking-wide">
           Usuario
         </label>
         <input type="text" [(ngModel)]="loginData.email" name="email" placeholder="Ingresa tu nombre de usuario"
                class="input-tiyc focus:ring-tiyc-primary focus:border-tiyc-primary" required #emailInput="ngModel" />
-        <div *ngIf="emailInput.invalid && emailInput.touched" class="text-red-500 text-sm mt-1">
+        <div *ngIf="emailInput.invalid && emailInput.touched" class="text-red-500 text-tiyc-small mt-1">
           El usuario es requerido
         </div>
       </div>
 
       <!-- Campo Contraseña -->
       <div>
-        <label class="block text-tiyc-primary font-bold mb-2 text-sm uppercase tracking-wide">
+        <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body uppercase tracking-wide">
           Contraseña
         </label>
         <input type="password" [(ngModel)]="loginData.password" name="password"
                placeholder="Ingresa tu contraseña" class="input-tiyc focus:ring-tiyc-primary focus:border-tiyc-primary"
                required #passwordInput="ngModel" />
-        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="text-red-500 text-sm mt-1">
+        <div *ngIf="passwordInput.invalid && passwordInput.touched" class="text-red-500 text-tiyc-small mt-1">
           La contraseña es requerida
         </div>
       </div>
 
-     
       <button type="submit" [disabled]="isLoading || loginForm.invalid"
-              class="btn-tiyc-primary w-full text-lg uppercase tracking-wide"
+              class="btn-tiyc-primary w-full text-tiyc-subhead uppercase tracking-wide"
               [class.opacity-50]="isLoading || loginForm.invalid"
               [class.cursor-not-allowed]="isLoading || loginForm.invalid">
         <span *ngIf="!isLoading">LOGIN</span>
@@ -118,21 +111,19 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
           </svg>
-          Iniciando sesión...
+          <span class="text-tiyc-body">Iniciando sesión...</span>
         </span>
       </button>
     </form>
 
     <!-- Link de recuperación -->
     <div class="text-center mt-6">
-      <a href="#" class="text-gray-500 hover:text-tiyc-primary text-sm transition-colors duration-300">
+      <a href="#" class="text-gray-500 hover:text-tiyc-primary text-tiyc-small transition-colors duration-300">
         ¿Olvidaste tu contraseña?
       </a>
     </div>
   </div>
 </div>
-
-
 
     <div class="bg-tiyc-light h-16 flex items-end justify-start pl-8 pb-2">
   <div class="text-4xl animate-float">🤖</div>

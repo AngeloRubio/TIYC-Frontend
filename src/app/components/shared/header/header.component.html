@@ -12,7 +12,7 @@
         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
       >
       <!-- Fallback text si la imagen no carga -->
-      <span class="hidden">TIYC</span>
+      <span class="hidden text-tiyc-heading">TIYC</span>
     </div>
     
     <!-- TODO EL CONTENIDO DEL LADO DERECHO -->
@@ -21,7 +21,7 @@
       <!-- Mi Biblioteca (desktop) -->
       <nav class="hidden md:flex items-center">
         <a 
-          class="nav-link"
+          class="nav-link text-tiyc-body"
           (click)="goToLibrary()"
           [class.active]="router.url === '/biblioteca'"
         >
@@ -30,15 +30,15 @@
       </nav>
       
       <!-- Información del usuario (visible en pantallas grandes) -->
-      <div class="hidden lg:flex flex-col text-right text-white text-sm" *ngIf="currentUser">
-        <span class="font-semibold">{{ getUserDisplayName() }}</span>
-        <span class="opacity-75 text-xs">{{ getUserEmail() }}</span>
+      <div class="hidden lg:flex flex-col text-right text-white text-tiyc-small" *ngIf="currentUser">
+        <span class="font-semibold text-tiyc-body">{{ getUserDisplayName() }}</span>
+        <span class="opacity-75 text-tiyc-small">{{ getUserEmail() }}</span>
       </div>
       
       <!-- Menú de usuario con dropdown -->
       <div class="relative user-menu">
         <button 
-          class="user-menu-btn"
+          class="user-menu-btn text-tiyc-body"
           (click)="toggleUserMenu()"
           [class.active]="isUserMenuOpen"
         >
@@ -57,14 +57,14 @@
         >
           <!-- Información del usuario en móvil -->
           <div class="lg:hidden px-4 py-3 border-b border-gray-100 bg-gray-50" *ngIf="currentUser">
-            <div class="font-semibold text-tiyc-brown text-sm">{{ getUserDisplayName() }}</div>
-            <div class="text-gray-600 text-xs">{{ getUserEmail() }}</div>
+            <div class="font-semibold text-tiyc-brown text-tiyc-body">{{ getUserDisplayName() }}</div>
+            <div class="text-gray-600 text-tiyc-small">{{ getUserEmail() }}</div>
           </div>
           
           <!-- Opciones del menú -->
           <div class="py-2">
             <button 
-              class="dropdown-item"
+              class="dropdown-item text-tiyc-body"
               (click)="goToConfig()"
             >
               ⚙️ Configuración
@@ -73,7 +73,7 @@
             <div class="border-t border-gray-100 my-1"></div>
             
             <button 
-              class="dropdown-item text-red-600 hover:bg-red-50"
+              class="dropdown-item text-red-600 hover:bg-red-50 text-tiyc-body"
               (click)="logout()"
             >
               🚪 Cerrar Sesión
@@ -96,7 +96,7 @@
   <nav class="md:hidden mt-4 pt-4 border-t border-white border-opacity-20">
     <div class="flex justify-end">
       <a 
-        class="nav-link-mobile"
+        class="nav-link-mobile text-tiyc-body"
         (click)="goToLibrary()"
         [class.active]="router.url === '/biblioteca'"
       >

@@ -33,6 +33,17 @@ module.exports = {
       fontFamily: {
         sans: ["Arial", "Helvetica", "sans-serif"],
       },
+
+      // ✅ NUEVO: TypeScale TIYC - Minor Third (1.2)
+      fontSize: {
+        'tiyc-hero': ['27.6px', { lineHeight: '1.2', letterSpacing: '-0.02em' }],     // Títulos principales
+        'tiyc-title': ['23px', { lineHeight: '1.3', letterSpacing: '-0.01em' }],      // Títulos de sección
+        'tiyc-heading': ['19.2px', { lineHeight: '1.4', letterSpacing: '0' }],        // Encabezados
+        'tiyc-subhead': ['16px', { lineHeight: '1.5', letterSpacing: '0' }],          // BASE - Subtítulos
+        'tiyc-body': ['13.3px', { lineHeight: '1.6', letterSpacing: '0.01em' }],      // Texto cuerpo
+        'tiyc-small': ['11.1px', { lineHeight: '1.5', letterSpacing: '0.02em' }],     // Texto pequeño
+        'tiyc-caption': ['9.3px', { lineHeight: '1.4', letterSpacing: '0.03em' }],    // Etiquetas/metadatos
+      },
       
       animation: {
         "bounce-slow": "bounce 2s infinite",

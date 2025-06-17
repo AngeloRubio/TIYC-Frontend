@@ -28,146 +28,90 @@
 
 @layer components {
   .btn-tiyc-primary {
-    background-color: #96572a;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.75rem;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(150, 87, 42, 0.15);
-    text-align: center;
-    border: none;
-    cursor: pointer;
+    @apply bg-tiyc-primary text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 shadow-tiyc text-center border-none cursor-pointer text-tiyc-body;
   }
 
   .btn-tiyc-primary:hover {
-    background-color: #b8744d;
-    box-shadow: 0 8px 24px rgba(150, 87, 42, 0.2);
+    @apply bg-tiyc-primary-light shadow-tiyc-lg;
     transform: translateY(-1px);
   }
 
   .btn-tiyc-primary:active {
-    background-color: #7a4521;
+    @apply bg-tiyc-primary-dark;
   }
 
   .btn-tiyc-secondary {
-    background-color: #8b4513;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 0.75rem;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(150, 87, 42, 0.15);
-    text-align: center;
-    border: none;
-    cursor: pointer;
+    @apply bg-tiyc-secondary text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 shadow-tiyc text-center border-none cursor-pointer text-tiyc-body;
   }
 
   .btn-tiyc-secondary:hover {
-    background-color: #a0692e;
-    box-shadow: 0 8px 24px rgba(150, 87, 42, 0.2);
+    @apply bg-tiyc-accent shadow-tiyc-lg;
     transform: translateY(-1px);
   }
 
   .card-tiyc {
-    background-color: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 16px rgba(150, 87, 42, 0.1);
-    transition: all 0.3s ease;
-    overflow: hidden;
+    @apply bg-white rounded-xl shadow-tiyc transition-all duration-300 overflow-hidden;
   }
 
   .card-tiyc:hover {
-    box-shadow: 0 8px 24px rgba(150, 87, 42, 0.2);
+    @apply shadow-tiyc-lg;
     transform: translateY(-8px);
   }
 
   .input-tiyc {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 0.75rem;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
-    background-color: white;
+    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl transition-all duration-300 bg-white text-tiyc-body;
   }
 
   .input-tiyc:focus {
-    outline: none;
-    border-color: #96572a;
+    @apply outline-none border-tiyc-primary;
     box-shadow: 0 0 0 3px rgba(150, 87, 42, 0.2);
   }
 
   .title-tiyc {
-    color: #96572a;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    line-height: 1.2;
+    @apply text-tiyc-primary font-bold text-center mb-6 text-tiyc-title;
   }
 
   .container-tiyc {
-    max-width: 20rem;
-    margin: 0 auto;
-    background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 0.75rem;
-    box-shadow: 0 12px 32px rgba(150, 87, 42, 0.25);
-    overflow: hidden;
+    @apply max-w-sm mx-auto bg-white bg-opacity-95 rounded-xl shadow-tiyc-xl overflow-hidden;
   }
 
   .header-tiyc {
-    background-color: #96572a;
-    color: white;
-    padding: 0.75rem 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+    @apply bg-tiyc-primary text-white px-4 py-3 flex flex-col justify-between items-center;
   }
 
   .logo-tiyc {
-    background-color: white;
-    color: #96572a;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.75rem;
-    font-weight: bold;
-    font-size: 1.125rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    cursor: pointer;
+    @apply bg-white text-tiyc-primary px-3 py-2 rounded-xl font-bold shadow-md transition-all duration-300 cursor-pointer text-tiyc-subhead;
   }
 
   .logo-tiyc:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    @apply shadow-lg;
     transform: scale(1.05);
   }
 
+  /* Responsive Updates with TypeScale */
   @media (min-width: 640px) {
     .btn-tiyc-primary, .btn-tiyc-secondary { 
-      padding: 0.75rem 1.5rem; 
-      border-radius: 1rem; 
+      @apply px-6 py-3 rounded-2xl text-tiyc-subhead; 
     }
-    .card-tiyc { border-radius: 1rem; }
-    .input-tiyc { padding: 1rem; border-radius: 1rem; font-size: 1rem; }
-    .title-tiyc { font-size: 1.875rem; margin-bottom: 2rem; }
-    .container-tiyc { max-width: 24rem; border-radius: 1rem; }
-    .header-tiyc { padding: 1rem 1.5rem; flex-direction: row; }
-    .logo-tiyc { padding: 0.5rem 1rem; border-radius: 1rem; font-size: 1.25rem; }
+    .card-tiyc { @apply rounded-2xl; }
+    .input-tiyc { @apply px-4 py-4 rounded-2xl text-tiyc-subhead; }
+    .title-tiyc { @apply text-tiyc-hero mb-8; }
+    .container-tiyc { @apply max-w-md rounded-2xl; }
+    .header-tiyc { @apply px-6 py-4 flex-row; }
+    .logo-tiyc { @apply px-4 py-2 rounded-2xl text-tiyc-heading; }
   }
 
   @media (min-width: 768px) {
-    .container-tiyc { max-width: 42rem; }
+    .container-tiyc { @apply max-w-2xl; }
   }
 
   @media (min-width: 1024px) {
-    .title-tiyc { font-size: 2.25rem; }
-    .container-tiyc { max-width: 56rem; border-radius: 1.5rem; }
-    .header-tiyc { padding: 1rem 2rem; }
+    .container-tiyc { @apply max-w-4xl rounded-3xl; }
+    .header-tiyc { @apply px-8 py-4; }
   }
 
   @media (min-width: 1280px) {
-    .container-tiyc { max-width: 72rem; }
+    .container-tiyc { @apply max-w-6xl; }
   }
 }
 
