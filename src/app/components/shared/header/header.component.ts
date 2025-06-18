@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -35,19 +35,17 @@ import { Teacher } from '../../../models/story.model';
   ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  // Estado del dropdown del usuario
-  isUserMenuOpen = false;
   
-  // Información del usuario
+  isUserMenuOpen = false;
   currentUser: Teacher | null = null;
   isAuthenticated = false;
   
-  // Subscripciones
   private subscriptions = new Subscription();
   
   constructor(
     public router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
   
   ngOnInit(): void {
@@ -57,12 +55,40 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
+  /**
+   * Navega a la página de biblioteca
+   * Mantiene compatibilidad con tu template original
+   */
+  goToLibrary(): void {
+    this.closeUserMenu();
+    this.safeNavigate('/biblioteca');
+  }
   
+  /**
+   * Navega a la página de configuración
+   * Mantiene compatibilidad con tu template original
+   */
+  goToConfig(): void {
+    this.closeUserMenu();
+    this.safeNavigate('/configuracion');
+  }
+  
+  /**
+   * Maneja el logout del usuario
+   * Mantiene compatibilidad con tu template original
+   */
+  logout(): void {
+    this.closeUserMenu();
+    this.safeLogout();
+  }
+
   /**
    * Alterna la visibilidad del menú de usuario
    */
   toggleUserMenu(): void {
     this.isUserMenuOpen = !this.isUserMenuOpen;
+    console.log('Menu toggled:', this.isUserMenuOpen);
   }
   
   /**
@@ -70,66 +96,143 @@ export class HeaderComponent implements OnInit, OnDestroy {
    */
   closeUserMenu(): void {
     this.isUserMenuOpen = false;
+    console.log('Menu closed');
   }
-  
+
   /**
-   * Navega a la página de biblioteca
-   * ⭐ ACTUALIZADO: goToHome() eliminado, solo biblioteca
+   * Navegación segura con fallbacks
    */
-  goToLibrary(): void {
-    this.closeUserMenu();
-    this.router.navigate(['/biblioteca']);
+  private safeNavigate(route: string): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('SSR: Navigation skipped');
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        if (this.router && this.router.navigate) {
+          this.router.navigate([route]);
+          console.log(`Navigated to: ${route}`);
+        } else {
+          throw new Error('Router not available');
+        }
+      } catch (error) {
+        console.error('Navigation error:', error);
+        this.fallbackNavigate(route);
+      }
+    }, 0);
   }
-  
+
   /**
-   * Navega a la página de configuración
+   * Navegación de fallback usando window.location
    */
-  goToConfig(): void {
-    this.closeUserMenu();
-    this.router.navigate(['/configuracion']);
+  private fallbackNavigate(route: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      console.log(`Fallback navigation to: ${route}`);
+      window.location.href = route;
+    }
   }
-  
+
   /**
-   * ❌ ELIMINADO: goToHome() - Ya no es necesario
-   * El logo ahora redirige directamente a biblioteca
+   * Logout seguro con fallbacks
    */
-  
-  /**
-   * Maneja el logout del usuario
-   */
-  logout(): void {
-    this.closeUserMenu();
-    this.authService.logout();
+  private safeLogout(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('SSR: Logout skipped');
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        if (this.authService && typeof this.authService.logout === 'function') {
+          this.authService.logout();
+          console.log('Logout via AuthService');
+        } else {
+          throw new Error('AuthService logout not available');
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+        this.fallbackLogout();
+      }
+    }, 0);
   }
-  
+
   /**
-   * Carga la información del usuario autenticado
+   * Logout de fallback manual
+   */
+  private fallbackLogout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      console.log('Fallback logout');
+      
+      try {
+        localStorage.removeItem('tiyc_auth_token');
+        localStorage.removeItem('tiyc_user_data');
+      } catch (e) {
+        console.warn('Could not clear localStorage:', e);
+      }
+      
+      window.location.href = '/login';
+    }
+  }
+
+  /**
+   * Cargar información del usuario
    */
   private loadUserInfo(): void {
-    // Suscribirse al estado de autenticación
-    const authSub = this.authService.isAuthenticated$.subscribe(
-      isAuth => this.isAuthenticated = isAuth
-    );
-    
-    // Suscribirse a los datos del usuario
-    const userSub = this.authService.currentUser$.subscribe(
-      user => this.currentUser = user
-    );
-    
-    this.subscriptions.add(authSub);
-    this.subscriptions.add(userSub);
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('SSR: User info loading skipped');
+      return;
+    }
+
+    try {
+      if (this.authService) {
+        
+        if (this.authService.isAuthenticated$) {
+          const authSub = this.authService.isAuthenticated$.subscribe({
+            next: (isAuth: boolean) => {
+              this.isAuthenticated = isAuth;
+              console.log('Auth status updated:', isAuth);
+            },
+            error: (error) => {
+              console.error('Auth subscription error:', error);
+            }
+          });
+          this.subscriptions.add(authSub);
+        }
+        
+        if (this.authService.currentUser$) {
+          const userSub = this.authService.currentUser$.subscribe({
+            next: (user: Teacher | null) => {
+              this.currentUser = user;
+              console.log('User updated:', user?.username || 'No user');
+            },
+            error: (error) => {
+              console.error('User subscription error:', error);
+            }
+          });
+          this.subscriptions.add(userSub);
+        }
+
+        console.log('User info subscriptions established');
+        
+      } else {
+        console.error('AuthService not available');
+      }
+    } catch (error) {
+      console.error('Error loading user info:', error);
+    }
   }
-  
+
   /**
-   * Obtiene el nombre para mostrar del usuario
+   * Obtener nombre para mostrar del usuario
    */
   getUserDisplayName(): string {
-    if (!this.currentUser) return 'Usuario';
-    return this.currentUser.username || 'Profesor';
+    if (!this.currentUser) return 'Profesor';
+    return this.currentUser.username || 'Usuario';
   }
   
   /**
-   * Obtiene el email del usuario
+   * Obtener email del usuario
    */
   getUserEmail(): string {
     if (!this.currentUser) return '';

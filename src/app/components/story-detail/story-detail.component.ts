@@ -1,11 +1,13 @@
+// src/app/components/story-detail/story-detail.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { StoryService } from '../../services/story.service';
+import { ImageModalService, ImageModalData } from '../../services/image-modal.service';
+import { ImageModalComponent } from '../shared/image-modal/image-modal.component';
 import { Story, Scenario } from '../../models/story.model';
-
 
 interface LocalIllustratedStory {
   story: Story;
@@ -15,7 +17,7 @@ interface LocalIllustratedStory {
 @Component({
   selector: 'app-story-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImageModalComponent], 
   templateUrl: './story-detail.component.html',
   styleUrls: ['./story-detail.component.css']
 })
@@ -33,7 +35,8 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private storyService: StoryService
+    private storyService: StoryService,
+    private imageModalService: ImageModalService 
   ) {}
   
   ngOnInit(): void {
@@ -42,6 +45,40 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+  
+  /**
+   *  Abre el modal para ver imagen en grande
+   */
+  openImageModal(scenario: Scenario, chapterIndex: number): void {
+    if (!scenario.image || !this.storyData) return;
+    
+    // Preparar todas las imágenes para navegación
+    const allImages: ImageModalData[] = this.getOrderedScenarios()
+      .filter(s => s.image)
+      .map((s, index) => ({
+        imageUrl: this.getImageUrl(s.image!.image_url),
+        title: this.getChapterTitle(index + 1),
+        description: s.description,
+        chapterNumber: index + 1,
+        prompt: s.image!.prompt
+      }));
+    
+    // Encontrar el índice actual
+    const currentIndex = allImages.findIndex(img => img.chapterNumber === chapterIndex + 1);
+    
+    // Datos de la imagen actual
+    const imageData: ImageModalData = {
+      imageUrl: this.getImageUrl(scenario.image.image_url),
+      title: this.getChapterTitle(chapterIndex + 1),
+      description: scenario.description,
+      chapterNumber: chapterIndex + 1,
+      prompt: scenario.image.prompt,
+      allImages: allImages,
+      currentIndex: currentIndex >= 0 ? currentIndex : 0
+    };
+    
+    this.imageModalService.openModal(imageData);
   }
   
   /**
@@ -78,7 +115,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
         console.log('📦 Respuesta del backend:', response);
         
         if (response.success && response.story) {
-        
           this.storyData = {
             story: response.story,
             scenarios: response.scenarios || []
@@ -113,18 +149,14 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/biblioteca']);
   }
   
-
   createNew(): void {
     this.router.navigate(['/crear']);
   }
   
-
   exportToPDF(): void {
     console.log('📄 Exportar a PDF - Por implementar');
- 
   }
   
-
   getImageUrl(relativeUrl: string): string {
     return this.storyService.getImageUrl(relativeUrl);
   }
@@ -175,7 +207,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     if (categoryLower.includes('amistad')) return '👫';
     if (categoryLower.includes('familia')) return '👨‍👩‍👧‍👦';
     
-    return '📖'; // Default
+    return '📖';
   }
   
   /**
@@ -216,7 +248,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
       '🎉 El Final Feliz'
     ];
     
-    // Si hay más capítulos que títulos predefinidos, usar genéricos
     if (chapterNumber > titles.length) {
       return `📖 Capítulo ${chapterNumber}`;
     }
@@ -225,7 +256,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   }
   
   /**
-   *: Dividir el contenido del cuento entre escenas para más narrativa
+   * Dividir el contenido del cuento entre escenas para más narrativa
    */
   getStoryContentForScene(sceneIndex: number): string {
     if (!this.storyData?.story?.content) return '';
@@ -260,7 +291,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
    * Expandir descripción del escenario para más contenido
    */
   private expandScenarioDescription(description: string): string {
-  
     const expansions: {[key: string]: string} = {
       'aventura': 'La emoción se siente en el aire mientras nuestros personajes se embarcan en esta nueva experiencia. Cada paso los lleva más cerca de descubrimientos increíbles.',
       'bosque': 'Los árboles susurran secretos antiguos mientras la luz del sol se filtra entre las hojas, creando un ambiente mágico y misterioso.',

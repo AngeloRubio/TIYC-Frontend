@@ -1,4 +1,4 @@
-/* Story Detail component - Optimizado para TypeScale */
+
 
 .chapter-container {
   transition: all 0.3s ease-in-out;
@@ -27,29 +27,88 @@
   }
 }
 
-.chapter-badge {
+/* ✨ IMAGEN INTERACTIVA OPTIMIZADA */
+.chapter-image {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.chapter-image img {
+  transition: all 0.3s ease-in-out;
+}
+
+.chapter-image:hover img {
+  transform: scale(1.02);
+}
+
+/* Botón de expandir imagen - OPTIMIZADO */
+.expand-image-btn {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  background: #96572a;
+  background: rgba(150, 87, 42, 0.9);
+  backdrop-filter: blur(8px);
   color: white;
-  width: 4rem;
-  height: 4rem;
+  border: none;
   border-radius: 50%;
+  width: 3.5rem;
+  height: 3.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  border: 4px solid white;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  animation: chapterPulse 2s ease-in-out infinite;
+  z-index: 10;
 }
 
-@keyframes chapterPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+.expand-image-btn:hover {
+  background: rgba(150, 87, 42, 1);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
+.expand-image-btn svg {
+  transition: transform 0.2s ease-in-out;
+}
+
+.expand-image-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* Overlay de hover para la imagen */
+.image-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chapter-image:hover .image-hover-overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.image-zoom-icon {
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease-in-out;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  padding: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chapter-image:hover .image-zoom-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Header del capítulo */
 .chapter-header {
   background: #96572a;
   color: white;
@@ -74,25 +133,14 @@
   100% { left: 100%; }
 }
 
-.chapter-image {
-  position: relative;
-  overflow: hidden;
-}
-
-.chapter-image img {
-  transition: all 0.3s ease-in-out;
-}
-
-.chapter-container:hover .chapter-image img {
-  transform: scale(1.02);
-}
-
+/* Contenido narrativo */
 .narrative-content {
   font-family: 'Georgia', 'Times New Roman', serif;
   line-height: 1.8;
   color: #374151;
 }
 
+/* Final de la historia */
 .story-ending {
   background: linear-gradient(135deg, #ffffff, #f5f2e8, #e8dcc0);
   border: 2px solid #96572a;
@@ -100,6 +148,7 @@
   overflow: hidden;
 }
 
+/* Separador entre capítulos */
 .chapter-separator {
   text-align: center;
   margin: 2rem 0;
@@ -126,16 +175,82 @@
   z-index: 0;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .chapter-container { margin-bottom: 2rem; }
-  .chapter-image { height: 300px; }
+/* ✨ ESTADOS DE IMAGEN */
+.image-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmerLoading 1.5s infinite;
 }
 
-@media (max-width: 768px) {
-  .chapter-badge {
+@keyframes shimmerLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.image-error {
+  background: #fef2f2;
+  border: 2px dashed #fca5a5;
+  color: #ef4444;
+}
+
+/* ✨ RESPONSIVE */
+@media (max-width: 1024px) {
+  .chapter-container { 
+    margin-bottom: 2rem; 
+  }
+  
+  .chapter-image { 
+    height: 300px; 
+  }
+  
+  .expand-image-btn {
     width: 3rem;
     height: 3rem;
   }
-  .chapter-header { padding: 1rem; }
+}
+
+@media (max-width: 768px) {
+  .chapter-header { 
+    padding: 1rem; 
+  }
+  
+  .expand-image-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .expand-image-btn svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+/* ✨ ACCESIBILIDAD */
+.expand-image-btn:focus {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+.chapter-image:focus-within {
+  outline: 2px solid #96572a;
+  outline-offset: 4px;
+}
+
+/* ✨ PREFERS REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .chapter-container,
+  .expand-image-btn,
+  .chapter-image img,
+  .image-zoom-icon {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .chapter-container:hover {
+    transform: none;
+  }
+  
+  .expand-image-btn:hover {
+    transform: none;
+  }
 }

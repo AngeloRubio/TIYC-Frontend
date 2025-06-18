@@ -50,3 +50,15 @@
     @apply left-0 right-0 mx-4 min-w-0;
   }
 }
+
+/* Agregar a header.component.css: */
+.user-dropdown {
+  position: absolute !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+.dropdown-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}

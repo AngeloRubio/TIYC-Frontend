@@ -1,12 +1,11 @@
-<!-- Header optimizado TIYC  -->
+<!-- Header optimizado TIYC -->
 <header class="header-tiyc shadow-lg relative z-50">
   <div class="flex items-center justify-between w-full">
     
     <!-- Logo TIYC - Lado izquierdo -->
     <div class="logo-tiyc cursor-pointer flex items-center" (click)="goToLibrary()">
-
       <img 
-        src="\assets\images\logo proyecto png.PNG" 
+        src="assets/images/logo proyecto png.PNG" 
         alt="TIYC Logo" 
         class="h-10 w-auto object-contain"
         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
@@ -20,13 +19,14 @@
       
       <!-- Mi Biblioteca (desktop) -->
       <nav class="hidden md:flex items-center">
-        <a 
+        <button 
+          type="button"
           class="nav-link text-tiyc-body"
           (click)="goToLibrary()"
           [class.active]="router.url === '/biblioteca'"
         >
           📚 Mi biblioteca
-        </a>
+        </button>
       </nav>
       
       <!-- Información del usuario (visible en pantallas grandes) -->
@@ -38,11 +38,12 @@
       <!-- Menú de usuario con dropdown -->
       <div class="relative user-menu">
         <button 
+          type="button"
           class="user-menu-btn text-tiyc-body"
           (click)="toggleUserMenu()"
           [class.active]="isUserMenuOpen"
         >
-          👨‍🏫 Profesor 
+          👨‍🏫 {{ getUserDisplayName() }}
           <span class="ml-1 transition-transform duration-200" 
                 [class.rotate-180]="isUserMenuOpen">
             ▼
@@ -64,6 +65,7 @@
           <!-- Opciones del menú -->
           <div class="py-2">
             <button 
+              type="button"
               class="dropdown-item text-tiyc-body"
               (click)="goToConfig()"
             >
@@ -73,6 +75,7 @@
             <div class="border-t border-gray-100 my-1"></div>
             
             <button 
+              type="button"
               class="dropdown-item text-red-600 hover:bg-red-50 text-tiyc-body"
               (click)="logout()"
             >
@@ -83,7 +86,7 @@
       </div>
       
       <!-- Botón de menú móvil (hamburguesa) -->
-      <button class="md:hidden text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg">
+      <button type="button" class="md:hidden text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-lg">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                 d="M4 6h16M4 12h16M4 18h16"></path>
@@ -95,13 +98,14 @@
   <!-- Navegación móvil - Mi Biblioteca alineada a la derecha -->
   <nav class="md:hidden mt-4 pt-4 border-t border-white border-opacity-20">
     <div class="flex justify-end">
-      <a 
+      <button 
+        type="button"
         class="nav-link-mobile text-tiyc-body"
         (click)="goToLibrary()"
         [class.active]="router.url === '/biblioteca'"
       >
         📚 Mi biblioteca
-      </a>
+      </button>
     </div>
   </nav>
 </header>
