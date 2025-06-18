@@ -1,10 +1,7 @@
-
-
 export const APP_CONFIG = {
   // URLs de la API
   API_BASE_URL: 'http://localhost:5000/api',
   
-
   ENDPOINTS: {
     // Autenticación
     LOGIN: '/auth/login',
@@ -23,6 +20,14 @@ export const APP_CONFIG = {
     
     // Escenarios
     STORY_SCENARIOS: '/scenarios/story',
+    
+    // Perfil del profesor
+    PROFILE_GET: '/profile',
+    PROFILE_UPDATE: '/profile',
+    PROFILE_PASSWORD: '/profile/password',
+    PROFILE_ACTIVITY: '/profile/activity',
+    PROFILE_VALIDATE: '/profile/validate',
+    PROFILE_STATS: '/profile/stats',
   },
   
   // Configuraciones de la aplicación
@@ -59,7 +64,6 @@ export const APP_CONFIG = {
     ITEMS_PER_PAGE: 12,
   },
   
-
   APP_INFO: {
     NAME: 'TIYC',
     FULL_NAME: 'Tú Inspiras, Yo Creo',

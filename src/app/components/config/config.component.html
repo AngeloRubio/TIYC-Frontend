@@ -1,21 +1,180 @@
-<!-- Archivo: src/app/components/config/config.component.html -->
-<div class="container mx-auto px-4 py-8">
-  <div class="container-tiyc">
-    <div class="p-8">
-      <h1 class="title-tiyc">CONFIGURACIÓN DE PERFIL</h1>
-      
-      <div class="max-w-2xl mx-auto">
-        <div class="bg-white bg-opacity-50 rounded-2xl p-8 text-center">
-          <div class="text-6xl mb-4">⚙️</div>
-          <h3 class="text-tiyc-brown font-bold text-tiyc-heading mb-4">Configuración del Profesor</h3>
-          <p class="text-gray-600 mb-6 text-tiyc-body">
-            Aquí podrás actualizar tu información personal y preferencias
-          </p>
-          <div class="text-tiyc-tan font-semibold text-tiyc-body">
-            🚧 Próximamente: Formulario de configuración completo 🚧
+<div class="min-h-screen bg-tiyc-light">
+  <div class="container mx-auto px-4 py-8">
+    <div class="container-tiyc">
+
+      <div class="header-tiyc">
+        <div class="flex flex-col sm:flex-row justify-between items-center">
+          <div>
+            <h1 class="text-tiyc-title font-bold">CONFIGURACIÓN</h1>
+            <div class="text-tiyc-small opacity-75">Gestiona tu perfil y preferencias</div>
           </div>
         </div>
       </div>
+
+      <div *ngIf="isLoading" class="p-8 text-center py-16">
+        <div class="text-6xl mb-6 animate-bounce">⚙️</div>
+        <h3 class="text-tiyc-brown font-bold text-tiyc-heading mb-4">Cargando configuración...</h3>
+        <p class="text-gray-600 text-tiyc-body">Obteniendo información de tu perfil</p>
+        <div class="flex justify-center mt-6">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-tiyc-brown"></div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading" class="p-6">
+
+        <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-tiyc-body">{{ error }}</span>
+            <button (click)="error = null" class="text-red-500 hover:text-red-700 transition-colors duration-200">✕</button>
+          </div>
+        </div>
+
+        <div *ngIf="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 shadow-sm">
+          <div class="flex justify-between items-center">
+            <span class="text-tiyc-body">{{ successMessage }}</span>
+            <button (click)="successMessage = null" class="text-green-500 hover:text-green-700 transition-colors duration-200">✕</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          <div class="lg:col-span-2 space-y-8">
+
+            <!-- Información Personal -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div class="bg-tiyc-primary text-white p-6">
+                <h2 class="text-tiyc-heading font-bold flex items-center gap-3">👤 Información Personal</h2>
+              </div>
+
+              <div class="p-6">
+                <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
+
+                  <div class="mb-6">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Nombre de Usuario</label>
+                    <input type="text" formControlName="username" class="input-tiyc" [class]="getFieldValidationClass('username')" placeholder="Tu nombre de usuario">
+                    
+                    <div class="mt-2 text-tiyc-small">
+                      <span *ngIf="fieldValidation['username']?.isValidating" class="text-gray-500">🔄 Validando...</span>
+                      <span *ngIf="!fieldValidation['username']?.isValidating && fieldValidation['username']?.message" 
+                            [class.text-green-600]="fieldValidation['username'].isValid"
+                            [class.text-red-600]="!fieldValidation['username'].isValid">
+                        {{ getFieldValidationMessage('username') }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mb-6">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Email</label>
+                    <input type="email" [value]="profileData?.email || ''" class="input-tiyc bg-gray-100 cursor-not-allowed" readonly>
+                    <div class="text-gray-500 text-tiyc-small mt-1">📧 El email no se puede modificar</div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Grado que Enseñas</label>
+                    <select formControlName="grade" class="input-tiyc">
+                      <option value="">Selecciona un grado</option>
+                      <option *ngFor="let grade of gradeOptions" [value]="grade.value">{{ grade.label }}</option>
+                    </select>
+                  </div>
+
+                  <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" [disabled]="!isFormValid() || isSaving" [class.opacity-50]="!isFormValid() || isSaving" [class.cursor-not-allowed]="!isFormValid() || isSaving" class="btn-tiyc-primary flex-1">
+                      <span *ngIf="!isSaving" class="flex items-center justify-center gap-2">💾 Guardar Cambios</span>
+                      <span *ngIf="isSaving" class="flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Guardando...
+                      </span>
+                    </button>
+
+                    <button type="button" (click)="togglePasswordForm()" class="btn-tiyc-secondary flex-1">
+                      🔐 {{ showPasswordForm ? 'Cancelar' : 'Cambiar Contraseña' }}
+                    </button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+            <!-- Cambiar Contraseña -->
+            <div *ngIf="showPasswordForm" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div class="bg-yellow-500 text-white p-6">
+                <h2 class="text-tiyc-heading font-bold flex items-center gap-3">🔐 Cambiar Contraseña</h2>
+              </div>
+
+              <div class="p-6">
+                <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+
+                  <div class="mb-6">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Contraseña Actual</label>
+                    <input type="password" formControlName="currentPassword" class="input-tiyc" placeholder="Tu contraseña actual">
+                  </div>
+
+                  <div class="mb-6">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Nueva Contraseña</label>
+                    <input type="password" formControlName="newPassword" class="input-tiyc" placeholder="Mínimo 8 caracteres">
+                    <div class="text-gray-500 text-tiyc-small mt-1">🔒 Mínimo 8 caracteres</div>
+                  </div>
+
+                  <div class="mb-8">
+                    <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">Confirmar Nueva Contraseña</label>
+                    <input type="password" formControlName="confirmPassword" class="input-tiyc" [class.border-red-500]="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')" placeholder="Repite tu nueva contraseña">
+                    <div *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')" class="text-red-500 text-tiyc-small mt-1">❌ Las contraseñas no coinciden</div>
+                  </div>
+
+                  <div class="flex flex-col sm:flex-row gap-4">
+                    <button type="submit" [disabled]="passwordForm.invalid || isChangingPassword" [class.opacity-50]="passwordForm.invalid || isChangingPassword" [class.cursor-not-allowed]="passwordForm.invalid || isChangingPassword" class="btn-tiyc-primary flex-1">
+                      <span *ngIf="!isChangingPassword">🔄 Cambiar Contraseña</span>
+                      <span *ngIf="isChangingPassword" class="flex items-center justify-center gap-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Cambiando...
+                      </span>
+                    </button>
+
+                    <button type="button" (click)="togglePasswordForm()" class="btn-tiyc-secondary flex-1">❌ Cancelar</button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Panel derecho -->
+          <div class="space-y-8">
+
+            <!-- Información de Cuenta -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div class="bg-gray-600 text-white p-6">
+                <h2 class="text-tiyc-heading font-bold flex items-center gap-3">ℹ️ Información de Cuenta</h2>
+              </div>
+
+              <div class="p-6 space-y-4">
+                
+                <div>
+                  <div class="text-gray-600 text-tiyc-small mb-1">Miembro desde</div>
+                  <div class="font-semibold text-tiyc-primary text-tiyc-body">{{ formatDate(profileData?.created_at || '') }}</div>
+                </div>
+
+                <div class="border-t pt-4 space-y-3">
+                  <button (click)="goToCreateStory()" class="w-full btn-tiyc-primary text-tiyc-body">✨ Crear Nuevo Cuento</button>
+                  <button (click)="goToLibrary()" class="w-full btn-tiyc-secondary text-tiyc-body">📚 Ver Mi Biblioteca</button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
   </div>
 </div>
