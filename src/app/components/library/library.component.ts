@@ -7,6 +7,7 @@ import { StoryService } from '../../services/story.service';
 import { AuthService } from '../../services/auth.service';
 import { Story, Teacher } from '../../models/story.model';
 
+
 @Component({
   selector: 'app-library',
   standalone: true,
@@ -26,7 +27,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
   searchTerm = '';
   selectedFilter: 'all' | 'recent' | 'category' = 'all';
   
-  // Subscripciones
+ 
   private subscriptions = new Subscription();
   
   constructor(
@@ -106,9 +107,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/crear']);
   }
   
-  /**
-   * Navega al detalle de un cuento específico
-   */
   viewStory(storyId: string): void {
     this.router.navigate(['/cuento', storyId]);
   }
@@ -120,9 +118,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.searchTerm = searchTerm.toLowerCase();
   }
   
-  /**
-   * Cambiar filtro activo
-   */
   setFilter(filter: 'all' | 'recent' | 'category'): void {
     this.selectedFilter = filter;
   }
@@ -202,9 +197,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return 'Profesor';
   }
   
-  /**
-   * Obtener etiqueta de enfoque pedagógico con color
-   */
+
   getPedagogicalApproachLabel(approach: string): {label: string, color: string} {
     switch (approach) {
       case 'montessori':
@@ -258,7 +251,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
   }
   
   /**
-   * Obtener mensaje cuando no hay cuentos
+   * Obtener mensaje de error cuando no hay cuentos
    */
   getEmptyMessage(): string {
     if (this.searchTerm) {

@@ -90,6 +90,7 @@ export interface PreviewState {
   scenarios: Scenario[];
   status: 'idle' | 'generating' | 'ready' | 'saving' | 'error';
   error?: string;
+  lastUpdated?: number;
 }
 
 // Opciones de formulario

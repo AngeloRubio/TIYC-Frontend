@@ -1,5 +1,3 @@
-<!-- Aplicación principal TIYC -->
-
 
 <div *ngIf="isLoading" class="min-h-screen bg-tiyc-gradient flex items-center justify-center">
   <div class="text-center">
@@ -9,18 +7,16 @@
   </div>
 </div>
 
-
 <div *ngIf="!isLoading" class="min-h-screen bg-tiyc-gradient">
- 
   <app-header *ngIf="isAuthenticated"></app-header>
 
   <main [class.pt-0]="!isAuthenticated" [class.pt-4]="isAuthenticated">
     <router-outlet></router-outlet>
+ <app-copyright-footer></app-copyright-footer>
   </main>
   
- 
   <div *ngIf="isAuthenticated" class="fixed bottom-6 right-6 text-4xl animate-float cursor-pointer z-40">
     🤖
   </div>
-  
+
 </div>

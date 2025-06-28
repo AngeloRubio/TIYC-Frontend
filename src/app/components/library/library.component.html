@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <!-- Contenido principal -->
+
     <div class="p-6">
 
       <!-- Barra de búsqueda y filtros -->
@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <!-- Estado de Error -->
+   
       <div *ngIf="error && !isLoading" class="text-center py-16">
         <div class="text-6xl mb-6">😞</div>
         <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">Error al cargar la biblioteca</h3>
@@ -109,7 +109,7 @@
               {{ story.title }}
             </h3>
 
-            <!-- Metadata -->
+            
             <div class="flex justify-between items-center mb-3">
               <span class="text-gray-500 text-tiyc-small">
                 {{ formatDate(story.created_at) }}
@@ -120,19 +120,18 @@
               </span>
             </div>
 
-            <!-- Categoría -->
+     
             <div class="mb-3">
               <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
                 {{ story.category }}
               </span>
             </div>
 
-            <!-- Preview del contexto -->
             <p class="text-gray-600 text-tiyc-body mb-4 line-clamp-2">
               {{ story.context }}
             </p>
 
-            <!-- Botón de acción -->
+        
             <button (click)="viewStory(story.id); $event.stopPropagation()" class="btn-tiyc-primary w-full text-tiyc-body">
               📖 Ver Cuento
             </button>
@@ -179,4 +178,5 @@
 
     </div>
   </div>
+
 </div>

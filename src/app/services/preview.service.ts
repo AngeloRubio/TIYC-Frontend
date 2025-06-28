@@ -7,6 +7,14 @@ import {
   Image 
 } from '../models/story.model';
 
+
+interface ScenarioRegenerationState {
+  [scenarioId: string]: {
+    isRegenerating: boolean;
+    error?: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -19,8 +27,12 @@ export class PreviewService {
   
   private readonly loadingMessageSubject = new BehaviorSubject<{emoji: string, text: string} | null>(null);
   
+  // Estado de regeneración por escenario
+  private readonly regenerationStateSubject = new BehaviorSubject<ScenarioRegenerationState>({});
+  
   readonly previewState$ = this.previewStateSubject.asObservable();
   readonly loadingMessage$ = this.loadingMessageSubject.asObservable();
+  readonly regenerationState$ = this.regenerationStateSubject.asObservable();
 
   initializePreview(previewData: PreviewStoryResponse): void {
     if (!previewData.scenarios || !Array.isArray(previewData.scenarios)) {
@@ -44,14 +56,80 @@ export class PreviewService {
     this.loadingMessageSubject.next(message);
   }
 
+  /**
+   *  Inicia el estado de regeneración para un escenario
+   */
+  startScenarioRegeneration(scenarioId: string): void {
+    console.log(`🔄 [REGENERATION] Iniciando para scenario: ${scenarioId}`);
+    
+    const currentState = this.regenerationStateSubject.value;
+    this.regenerationStateSubject.next({
+      ...currentState,
+      [scenarioId]: {
+        isRegenerating: true,
+        error: undefined
+      }
+    });
+  }
+
+  /**
+   * Finaliza el estado de regeneración para un escenario
+   */
+  finishScenarioRegeneration(scenarioId: string, error?: string): void {
+    console.log(`✅ [REGENERATION] Finalizando para scenario: ${scenarioId}`, error ? `Error: ${error}` : 'Exitoso');
+    
+    const currentState = this.regenerationStateSubject.value;
+    this.regenerationStateSubject.next({
+      ...currentState,
+      [scenarioId]: {
+        isRegenerating: false,
+        error: error
+      }
+    });
+  }
+
   updateScenarioImage(scenarioId: string, newImage: Image): void {
+    console.log(`🖼️ [UPDATE] Actualizando imagen para scenario: ${scenarioId}`);
+    console.log(`🖼️ [UPDATE] Nueva imagen:`, {
+      id: newImage.id,
+      url: newImage.image_url,
+      prompt: newImage.prompt?.substring(0, 50) + '...'
+    });
+
     const currentState = this.previewStateSubject.value;
     
-    const updatedScenarios = currentState.scenarios.map(scenario => 
-      scenario.id === scenarioId ? { ...scenario, image: newImage } : scenario
-    );
+  
+    const scenarioExists = currentState.scenarios.find(s => s.id === scenarioId);
+    if (!scenarioExists) {
+      console.error(`❌ [UPDATE] Scenario ${scenarioId} no encontrado en estado actual`);
+      return;
+    }
 
-    this.previewStateSubject.next({ ...currentState, scenarios: updatedScenarios });
+    // Actualizar scenarios con nueva imagen
+    const updatedScenarios = currentState.scenarios.map(scenario => {
+      if (scenario.id === scenarioId) {
+        const updatedScenario = { 
+          ...scenario, 
+          image: {
+            ...newImage,
+            scenario_id: scenarioId //  Asegurar ID correcto
+          }
+        };
+        console.log(`✅ [UPDATE] Scenario actualizado:`, updatedScenario.id);
+        return updatedScenario;
+      }
+      return scenario;
+    });
+
+    this.previewStateSubject.next({ 
+      ...currentState, 
+      scenarios: updatedScenarios,
+      //  Timestamp para forzar re-render
+      lastUpdated: Date.now()
+    });
+
+    console.log(`🔄 [UPDATE] Estado actualizado. Total scenarios: ${updatedScenarios.length}`);
+    console.log(`🔄 [UPDATE] Scenarios con imagen: ${updatedScenarios.filter(s => s.image).length}`);
   }
 
   isPreviewReadyToSave(): boolean {
@@ -67,13 +145,38 @@ export class PreviewService {
   getPreviewDataForSave(): PreviewStoryResponse | null {
     const state = this.previewStateSubject.value;
     
-    if (!this.isPreviewReadyToSave() || !state.story) return null;
+    console.log(`💾 [SAVE] Preparando datos para guardar...`);
+    console.log(`💾 [SAVE] Estado actual:`, {
+      status: state.status,
+      hasStory: !!state.story,
+      totalScenarios: state.scenarios.length,
+      scenariosWithImages: state.scenarios.filter(s => s.image).length
+    });
+    
+    if (!this.isPreviewReadyToSave() || !state.story) {
+      console.error(`❌ [SAVE] Preview no está listo para guardar`);
+      return null;
+    }
+
+    //  Extraer imágenes directamente de scenarios (incluye regeneradas)
+    const currentImages = state.scenarios
+      .filter(s => s.image)
+      .map(s => {
+        console.log(`🖼️ [SAVE] Incluyendo imagen:`, {
+          scenarioId: s.id,
+          imageId: s.image!.id,
+          imageUrl: s.image!.image_url
+        });
+        return s.image!;
+      });
+
+    console.log(`💾 [SAVE] Total de imágenes a guardar: ${currentImages.length}`);
 
     return {
       success: true,
       story: state.story,
       scenarios: state.scenarios,
-      images: state.scenarios.map(s => s.image!).filter(img => !!img),
+      images: currentImages,  // 🎯 Imágenes actualizadas del estado
       mode: 'preview'
     };
   }
@@ -107,13 +210,50 @@ export class PreviewService {
     return this.previewStateSubject.value.error;
   }
 
-  setSavingState(): void { this.setLoadingState('saving'); }
-  setGeneratingState(): void { this.setLoadingState('generating'); }
-  isGenerating(): boolean { return this.previewStateSubject.value.status === 'generating'; }
-  isSaving(): boolean { return this.previewStateSubject.value.status === 'saving'; }
-  isReady(): boolean { return this.previewStateSubject.value.status === 'ready'; }
-  isIdle(): boolean { return this.previewStateSubject.value.status === 'idle'; }
-  hasError(): boolean { return this.previewStateSubject.value.status === 'error'; }
+  /**
+   *  Verifica si un escenario se está regenerando
+   */
+  isScenarioRegenerating(scenarioId: string): boolean {
+    const state = this.regenerationStateSubject.value;
+    return state[scenarioId]?.isRegenerating || false;
+  }
+
+  /**
+   *  Obtiene error de regeneración para un escenario
+   */
+  getScenarioRegenerationError(scenarioId: string): string | undefined {
+    const state = this.regenerationStateSubject.value;
+    return state[scenarioId]?.error;
+  }
+
+  setSavingState(): void { 
+    this.setLoadingState('saving'); 
+  }
+  
+  setGeneratingState(): void { 
+    this.setLoadingState('generating'); 
+  }
+  
+  isGenerating(): boolean { 
+    return this.previewStateSubject.value.status === 'generating'; 
+  }
+  
+  isSaving(): boolean { 
+    return this.previewStateSubject.value.status === 'saving'; 
+  }
+  
+  isReady(): boolean { 
+    return this.previewStateSubject.value.status === 'ready'; 
+  }
+  
+  isIdle(): boolean { 
+    return this.previewStateSubject.value.status === 'idle'; 
+  }
+  
+  hasError(): boolean { 
+    return this.previewStateSubject.value.status === 'error'; 
+  }
+  
   hasErrors(): boolean { 
     const state = this.previewStateSubject.value;
     return state.status === 'error' || !!state.error;
