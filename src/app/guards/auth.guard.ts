@@ -9,7 +9,7 @@ import { APP_CONFIG } from '../config/app.config';
   providedIn: 'root'
 })
 export class authGuard implements CanActivate {
-  
+
   private authService = inject(AuthService);
   private router = inject(Router);
 
@@ -24,28 +24,28 @@ export class authGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
-    
+
     console.log('🔒 AuthGuard: Verificando acceso a:', state.url);
-    
+
     return this.authService.isAuthenticated$.pipe(
       take(1), // Solo tomar el primer valor
       map(isAuthenticated => {
-        
+
         if (isAuthenticated) {
           console.log('✅ AuthGuard: Usuario autenticado, permitiendo acceso');
           return true;
         } else {
           console.log('❌ AuthGuard: Usuario no autenticado, redirigiendo al login');
-          
+
           // Guardar la URL que el usuario intentaba acceder para redirigir después del login
           const returnUrl = state.url;
           console.log('📝 AuthGuard: Guardando URL de retorno:', returnUrl);
-          
+
           // Navegar al login con la URL de retorno como parámetro
           this.router.navigate([APP_CONFIG.AUTH_CONFIG.LOGOUT_REDIRECT], {
             queryParams: { returnUrl: returnUrl }
           });
-          
+
           return false;
         }
       })
@@ -53,14 +53,10 @@ export class authGuard implements CanActivate {
   }
 }
 
-/**
- * 🔒 Función alternativa para usar con el nuevo sistema de guards funcionales
- * (Angular 15+)
- */
 export const authGuardFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  
+
   return authService.isAuthenticated$.pipe(
     take(1),
     map(isAuthenticated => {

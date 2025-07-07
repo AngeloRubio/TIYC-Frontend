@@ -40,12 +40,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
   currentUser: Teacher | null = null;
   isAuthenticated = false;
   
-  private subscriptions = new Subscription();
+  private readonly subscriptions = new Subscription();
   
   constructor(
-    public router: Router,
-    private authService: AuthService,
-    @Inject(PLATFORM_ID) private platformId: Object
+    public readonly router: Router,
+    private readonly authService: AuthService,
+    @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
   
   ngOnInit(): void {
@@ -88,7 +88,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
    */
   toggleUserMenu(): void {
     this.isUserMenuOpen = !this.isUserMenuOpen;
-    console.log('Menu toggled:', this.isUserMenuOpen);
   }
   
   /**
@@ -96,131 +95,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
    */
   closeUserMenu(): void {
     this.isUserMenuOpen = false;
-    console.log('Menu closed');
-  }
-
-  /**
-   * Navegación segura con fallbacks
-   */
-  private safeNavigate(route: string): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      console.log('SSR: Navigation skipped');
-      return;
-    }
-
-    setTimeout(() => {
-      try {
-        if (this.router && this.router.navigate) {
-          this.router.navigate([route]);
-          console.log(`Navigated to: ${route}`);
-        } else {
-          throw new Error('Router not available');
-        }
-      } catch (error) {
-        console.error('Navigation error:', error);
-        this.fallbackNavigate(route);
-      }
-    }, 0);
-  }
-
-  /**
-   * Navegación de fallback usando window.location
-   */
-  private fallbackNavigate(route: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      console.log(`Fallback navigation to: ${route}`);
-      window.location.href = route;
-    }
-  }
-
-  /**
-   * Logout seguro con fallbacks
-   */
-  private safeLogout(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      console.log('SSR: Logout skipped');
-      return;
-    }
-
-    setTimeout(() => {
-      try {
-        if (this.authService && typeof this.authService.logout === 'function') {
-          this.authService.logout();
-          console.log('Logout via AuthService');
-        } else {
-          throw new Error('AuthService logout not available');
-        }
-      } catch (error) {
-        console.error('Logout error:', error);
-        this.fallbackLogout();
-      }
-    }, 0);
-  }
-
-  /**
-   * Logout de fallback manual
-   */
-  private fallbackLogout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      console.log('Fallback logout');
-      
-      try {
-        localStorage.removeItem('tiyc_auth_token');
-        localStorage.removeItem('tiyc_user_data');
-      } catch (e) {
-        console.warn('Could not clear localStorage:', e);
-      }
-      
-      window.location.href = '/login';
-    }
-  }
-
-  /**
-   * Cargar información del usuario
-   */
-  private loadUserInfo(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      console.log('SSR: User info loading skipped');
-      return;
-    }
-
-    try {
-      if (this.authService) {
-        
-        if (this.authService.isAuthenticated$) {
-          const authSub = this.authService.isAuthenticated$.subscribe({
-            next: (isAuth: boolean) => {
-              this.isAuthenticated = isAuth;
-              console.log('Auth status updated:', isAuth);
-            },
-            error: (error) => {
-              console.error('Auth subscription error:', error);
-            }
-          });
-          this.subscriptions.add(authSub);
-        }
-        
-        if (this.authService.currentUser$) {
-          const userSub = this.authService.currentUser$.subscribe({
-            next: (user: Teacher | null) => {
-              this.currentUser = user;
-              console.log('User updated:', user?.username || 'No user');
-            },
-            error: (error) => {
-              console.error('User subscription error:', error);
-            }
-          });
-          this.subscriptions.add(userSub);
-        }
-
-        console.log('User info subscriptions established');
-        
-      } else {
-        console.error('AuthService not available');
-      }
-    } catch (error) {
-      console.error('Error loading user info:', error);
-    }
   }
 
   /**
@@ -244,5 +118,109 @@ export class HeaderComponent implements OnInit, OnDestroy {
    */
   getDropdownAnimationState(): string {
     return this.isUserMenuOpen ? 'open' : 'closed';
+  }
+
+  /**
+   * Navegación segura con fallbacks
+   */
+  private safeNavigate(route: string): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        if (this.router?.navigate) {
+          this.router.navigate([route]);
+        } else {
+          this.fallbackNavigate(route);
+        }
+      } catch (error) {
+        this.fallbackNavigate(route);
+      }
+    }, 0);
+  }
+
+  /**
+   * Navegación de fallback usando window.location
+   */
+  private fallbackNavigate(route: string): void {
+    if (isPlatformBrowser(this.platformId)) {
+      window.location.href = route;
+    }
+  }
+
+  /**
+   * Logout seguro con fallbacks
+   */
+  private safeLogout(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    setTimeout(() => {
+      try {
+        if (this.authService?.logout) {
+          this.authService.logout();
+        } else {
+          this.fallbackLogout();
+        }
+      } catch (error) {
+        this.fallbackLogout();
+      }
+    }, 0);
+  }
+
+  /**
+   * Logout de fallback manual
+   */
+  private fallbackLogout(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.removeItem('tiyc_auth_token');
+        localStorage.removeItem('tiyc_user_data');
+      } catch (e) {
+        // Silently handle localStorage errors
+      }
+      
+      window.location.href = '/login';
+    }
+  }
+
+  /**
+   * Cargar información del usuario
+   */
+  private loadUserInfo(): void {
+    if (!isPlatformBrowser(this.platformId) || !this.authService) {
+      return;
+    }
+
+    try {
+      if (this.authService.isAuthenticated$) {
+        const authSub = this.authService.isAuthenticated$.subscribe({
+          next: (isAuth: boolean) => {
+            this.isAuthenticated = isAuth;
+          },
+          error: (error) => {
+            // Handle error silently or with minimal logging
+          }
+        });
+        this.subscriptions.add(authSub);
+      }
+      
+      if (this.authService.currentUser$) {
+        const userSub = this.authService.currentUser$.subscribe({
+          next: (user: Teacher | null) => {
+            this.currentUser = user;
+          },
+          error: (error) => {
+            // Handle error silently or with minimal logging
+          }
+        });
+        this.subscriptions.add(userSub);
+      }
+    } catch (error) {
+      // Handle initialization errors silently
+    }
   }
 }

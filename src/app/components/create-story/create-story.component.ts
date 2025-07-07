@@ -38,7 +38,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     category: '',
     pedagogical_approach: 'traditional',
     target_age: 'Primero de Básica',
-    num_illustrations: 3
+    num_illustrations: 6
   };
 
   readonly gradeOptions = GRADE_OPTIONS;
@@ -174,7 +174,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
       return;
     }
 
-    //  Usar nuevo comando optimizado para preview
+    // Crear el comando de regeneración de imagen con el prompt del scenario
     const regenerateCommand = new OptimizedImageRegenerationCommand(
       this.storyService,
       this.previewService,

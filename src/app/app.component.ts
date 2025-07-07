@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { HeaderComponent } from './components/shared/header/header.component';
 import { CopyrightFooterComponent } from './components/shared/copyright-footer/copyright-footer.component';
@@ -13,29 +14,36 @@ import { AuthService } from './services/auth.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  title = 'TIYC - Tú Inspiras, Yo Creo';
+export class AppComponent implements OnInit, OnDestroy {
+  readonly title = 'TIYC - Tú Inspiras, Yo Creo';
   
   isLoading = true;
   isAuthenticated = false;
   
+  private readonly subscription = new Subscription();
+  
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
   
   ngOnInit(): void {
     this.initializeApp();
   }
   
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+  
   private initializeApp(): void {
-    this.authService.isAuthenticated$.subscribe(
+    const authSub = this.authService.isAuthenticated$.subscribe(
       isAuth => {
         this.isAuthenticated = isAuth;
         this.isLoading = false;
         this.handleAuthRedirect();
       }
     );
+    this.subscription.add(authSub);
   }
   
   private handleAuthRedirect(): void {

@@ -20,6 +20,12 @@ interface ValidationState {
   };
 }
 
+interface PasswordChangeData {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
 @Component({
   selector: 'app-config',
   standalone: true,
@@ -45,13 +51,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
   fieldValidation: ValidationState = {};
   readonly gradeOptions = GRADE_OPTIONS;
   
-  private subscriptions = new Subscription();
+  private readonly subscriptions = new Subscription();
   
   constructor(
-    private profileService: ProfileService,
-    private authService: AuthService,
-    private formBuilder: FormBuilder,
-    private router: Router
+    private readonly profileService: ProfileService,
+    private readonly authService: AuthService,
+    private readonly formBuilder: FormBuilder,
+    private readonly router: Router
   ) {
     this.initializeForms();
   }
@@ -64,7 +70,92 @@ export class ConfigComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
+
+  onUpdateProfile(): void {
+    if (this.profileForm.invalid || this.isSaving) return;
+    
+    this.isSaving = true;
+    this.error = null;
+    this.successMessage = null;
+    
+    const updatedFields = this.getChangedFields();
+    
+    if (Object.keys(updatedFields).length === 0) {
+      this.isSaving = false;
+      this.successMessage = 'No hay cambios para guardar';
+      return;
+    }
+    
+    const updateSub = this.profileService.updateProfile(updatedFields).subscribe({
+      next: (response: ProfileResponse) => this.handleUpdateResponse(response),
+      error: (error: any) => this.handleUpdateError(error)
+    });
+    
+    this.subscriptions.add(updateSub);
+  }
   
+  togglePasswordForm(): void {
+    this.showPasswordForm = !this.showPasswordForm;
+    if (!this.showPasswordForm) {
+      this.passwordForm.reset();
+    }
+  }
+  
+  onChangePassword(): void {
+    if (this.passwordForm.invalid || this.isChangingPassword) return;
+    
+    this.isChangingPassword = true;
+    this.error = null;
+    this.successMessage = null;
+    
+    const passwordData: PasswordChangeData = {
+      current_password: this.passwordForm.value.currentPassword,
+      new_password: this.passwordForm.value.newPassword,
+      confirm_password: this.passwordForm.value.confirmPassword
+    };
+    
+    const passwordSub = this.profileService.changePassword(passwordData).subscribe({
+      next: (response) => this.handlePasswordChangeResponse(response),
+      error: (error) => this.handlePasswordChangeError(error)
+    });
+    
+    this.subscriptions.add(passwordSub);
+  }
+  
+  getFieldValidationClass(field: string): string {
+    const validation = this.fieldValidation[field];
+    if (!validation || validation.isValidating) return '';
+    return validation.isValid ? 'border-green-500' : 'border-red-500';
+  }
+  
+  getFieldValidationMessage(field: string): string {
+    const validation = this.fieldValidation[field];
+    if (!validation) return '';
+    if (validation.isValidating) return 'Validando...';
+    return validation.message;
+  }
+  
+  isFormValid(): boolean {
+    return this.profileForm.valid && !this.hasInvalidFields();
+  }
+  
+  formatDate(dateString: string | undefined): string {
+    if (!dateString) return 'No disponible';
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+  
+  goToLibrary(): void {
+    this.router.navigate(['/biblioteca']);
+  }
+  
+  goToCreateStory(): void {
+    this.router.navigate(['/crear']);
+  }
+
   private initializeComponent(): void {
     const userSub = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
@@ -122,7 +213,6 @@ export class ConfigComponent implements OnInit, OnDestroy {
       error: (error: any) => {
         this.error = 'Error de conexión al cargar perfil';
         this.isLoading = false;
-        console.error('Error loading profile:', error);
       }
     });
     
@@ -137,14 +227,8 @@ export class ConfigComponent implements OnInit, OnDestroy {
       });
     }
   }
-  
-  onUpdateProfile(): void {
-    if (this.profileForm.invalid || this.isSaving) return;
-    
-    this.isSaving = true;
-    this.error = null;
-    this.successMessage = null;
-    
+
+  private getChangedFields(): any {
     const formData = this.profileForm.value;
     const updatedFields: any = {};
     
@@ -155,74 +239,41 @@ export class ConfigComponent implements OnInit, OnDestroy {
       updatedFields.grade = formData.grade;
     }
     
-    if (Object.keys(updatedFields).length === 0) {
-      this.isSaving = false;
-      this.successMessage = 'No hay cambios para guardar';
-      return;
-    }
-    
-    const updateSub = this.profileService.updateProfile(updatedFields).subscribe({
-      next: (response: ProfileResponse) => {
-        if (response.success) {
-          this.profileData = response.profile!;
-          this.successMessage = response.message || 'Perfil actualizado exitosamente';
-          this.authService.updateCurrentUser(response.profile);
-          setTimeout(() => this.successMessage = null, 3000);
-        } else {
-          this.error = response.error || 'Error al actualizar perfil';
-        }
-        this.isSaving = false;
-      },
-      error: (error: any) => {
-        this.error = 'Error de conexión al actualizar perfil';
-        this.isSaving = false;
-        console.error('Error updating profile:', error);
-      }
-    });
-    
-    this.subscriptions.add(updateSub);
+    return updatedFields;
   }
-  
-  togglePasswordForm(): void {
-    this.showPasswordForm = !this.showPasswordForm;
-    if (!this.showPasswordForm) {
+
+  private handleUpdateResponse(response: ProfileResponse): void {
+    if (response.success) {
+      this.profileData = response.profile!;
+      this.successMessage = response.message || 'Perfil actualizado exitosamente';
+      this.authService.updateCurrentUser(response.profile);
+      setTimeout(() => this.successMessage = null, 3000);
+    } else {
+      this.error = response.error || 'Error al actualizar perfil';
+    }
+    this.isSaving = false;
+  }
+
+  private handleUpdateError(error: any): void {
+    this.error = 'Error de conexión al actualizar perfil';
+    this.isSaving = false;
+  }
+
+  private handlePasswordChangeResponse(response: {success: boolean, message?: string, error?: string}): void {
+    if (response.success) {
+      this.successMessage = response.message || 'Contraseña cambiada exitosamente';
       this.passwordForm.reset();
+      this.showPasswordForm = false;
+      setTimeout(() => this.successMessage = null, 3000);
+    } else {
+      this.error = response.error || 'Error al cambiar contraseña';
     }
+    this.isChangingPassword = false;
   }
-  
-  onChangePassword(): void {
-    if (this.passwordForm.invalid || this.isChangingPassword) return;
-    
-    this.isChangingPassword = true;
-    this.error = null;
-    this.successMessage = null;
-    
-    const passwordData = {
-      current_password: this.passwordForm.value.currentPassword,
-      new_password: this.passwordForm.value.newPassword,
-      confirm_password: this.passwordForm.value.confirmPassword
-    };
-    
-    const passwordSub = this.profileService.changePassword(passwordData).subscribe({
-      next: (response: {success: boolean, message?: string, error?: string}) => {
-        if (response.success) {
-          this.successMessage = response.message || 'Contraseña cambiada exitosamente';
-          this.passwordForm.reset();
-          this.showPasswordForm = false;
-          setTimeout(() => this.successMessage = null, 3000);
-        } else {
-          this.error = response.error || 'Error al cambiar contraseña';
-        }
-        this.isChangingPassword = false;
-      },
-      error: (error: any) => {
-        this.error = 'Error de conexión al cambiar contraseña';
-        this.isChangingPassword = false;
-        console.error('Error changing password:', error);
-      }
-    });
-    
-    this.subscriptions.add(passwordSub);
+
+  private handlePasswordChangeError(error: any): void {
+    this.error = 'Error de conexión al cambiar contraseña';
+    this.isChangingPassword = false;
   }
   
   private validateField(field: string, value: string): void {
@@ -260,41 +311,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
     return null;
   }
   
-  getFieldValidationClass(field: string): string {
-    const validation = this.fieldValidation[field];
-    if (!validation || validation.isValidating) return '';
-    return validation.isValid ? 'border-green-500' : 'border-red-500';
-  }
-  
-  getFieldValidationMessage(field: string): string {
-    const validation = this.fieldValidation[field];
-    if (!validation) return '';
-    if (validation.isValidating) return 'Validando...';
-    return validation.message;
-  }
-  
-  isFormValid(): boolean {
-    return this.profileForm.valid && !this.hasInvalidFields();
-  }
-  
   private hasInvalidFields(): boolean {
     return Object.values(this.fieldValidation).some(v => !v.isValid && !v.isValidating);
-  }
-  
-  formatDate(dateString: string | undefined): string {
-    if (!dateString) return 'No disponible';
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-  
-  goToLibrary(): void {
-    this.router.navigate(['/biblioteca']);
-  }
-  
-  goToCreateStory(): void {
-    this.router.navigate(['/crear']);
   }
 }

@@ -10,11 +10,11 @@ import { APP_CONFIG } from '../config/app.config';
 })
 export class LoginGuard implements CanActivate {
   
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   /**
-   * 🚪 Guard que evita que usuarios autenticados accedan al login
+   * Guard que evita que usuarios autenticados accedan al login
    * 
    * Si el usuario ya está autenticado, lo redirige a la biblioteca
    * Si no está autenticado, le permite acceder al login
@@ -28,36 +28,28 @@ export class LoginGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     
-    console.log('🚪 LoginGuard: Verificando si debe acceder al login');
-    
     return this.authService.isAuthenticated$.pipe(
       take(1),
       map(isAuthenticated => {
         
         if (isAuthenticated) {
-          console.log('✅ LoginGuard: Usuario ya autenticado, redirigiendo a biblioteca');
-          
           // Verificar si hay URL de retorno en los query params
           const returnUrl = route.queryParams['returnUrl'];
           
           if (returnUrl) {
-            console.log('📍 LoginGuard: Redirigiendo a URL guardada:', returnUrl);
             this.router.navigateByUrl(returnUrl);
           } else {
-            console.log('📚 LoginGuard: Redirigiendo a biblioteca por defecto');
             this.router.navigate([APP_CONFIG.AUTH_CONFIG.LOGIN_REDIRECT]);
           }
           
           return false;
         } else {
-          console.log('🔓 LoginGuard: Usuario no autenticado, permitiendo acceso al login');
           return true; 
         }
       })
     );
   }
 }
-
 
 export const loginGuardFn = () => {
   const authService = inject(AuthService);
