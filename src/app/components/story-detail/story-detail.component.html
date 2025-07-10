@@ -1,9 +1,7 @@
-
 <div class="min-h-screen bg-tiyc-gradient">
   <div class="container mx-auto px-4 py-8">
     <div class="container-tiyc">
-      
-      <!-- Loading State -->
+
       <div *ngIf="isLoading" class="p-8 text-center py-16">
         <div class="text-6xl mb-6 animate-bounce">📖</div>
         <h3 class="text-tiyc-brown font-bold text-tiyc-heading mb-4">Cargando cuento...</h3>
@@ -12,8 +10,7 @@
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-tiyc-brown"></div>
         </div>
       </div>
-      
-      <!-- Error State -->
+
       <div *ngIf="error && !isLoading" class="p-8 text-center py-16">
         <div class="text-6xl mb-6">😞</div>
         <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">Error al cargar el cuento</h3>
@@ -27,39 +24,77 @@
           </button>
         </div>
       </div>
-      
-      <!-- Story Content -->
+
       <div *ngIf="storyData && !isLoading && !error">
-        
-        <!-- Story Header -->
+
         <div class="bg-tiyc-primary text-white p-6">
-          <!-- Navigation -->
           <div class="flex justify-between items-center mb-6">
-            <button (click)="goBack()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 text-tiyc-body">
+            <button (click)="goBack()"
+              class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 text-tiyc-body">
               ← Biblioteca
             </button>
-            <button (click)="exportToPDF()" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 text-tiyc-body">
-              📄 <span class="hidden sm:inline">PDF</span>
+
+            <button type="button" [disabled]="isExporting" (click)="exportToPDF()"
+              class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 text-tiyc-body disabled:opacity-50 disabled:cursor-not-allowed">
+
+              <span *ngIf="!isExporting" class="flex items-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                <span class="hidden sm:inline">Exportar PDF</span>
+                <span class="sm:hidden">PDF</span>
+              </span>
+
+              <span *ngIf="isExporting" class="flex items-center gap-2">
+                <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                <span class="hidden sm:inline">Generando PDF...</span>
+                <span class="sm:hidden">PDF</span>
+              </span>
             </button>
           </div>
-          
-          <!-- Story Info -->
+
+          <div *ngIf="isExporting && exportProgress > 0" class="mb-4">
+            <div class="bg-white bg-opacity-20 rounded-full p-1">
+              <div class="bg-white bg-opacity-40 rounded-full px-3 py-1 text-center text-tiyc-small">
+                <div class="flex items-center justify-center gap-2">
+                  <div class="w-full bg-white bg-opacity-30 rounded-full h-2 max-w-xs">
+                    <div class="bg-white h-2 rounded-full transition-all duration-300" [style.width.%]="exportProgress">
+                    </div>
+                  </div>
+                  <span class="font-semibold">{{ exportProgress }}%</span>
+                </div>
+                <div class="text-tiyc-small opacity-75 mt-1">{{ exportMessage }}</div>
+              </div>
+            </div>
+          </div>
+
           <div class="text-center">
             <h1 class="text-tiyc-hero font-bold mb-4">{{ storyData.story.title }}</h1>
             <div class="flex flex-wrap justify-center gap-3 text-tiyc-small">
               <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full font-semibold flex items-center gap-1">
                 {{ getCategoryEmoji(storyData.story.category) }} {{ storyData.story.category }}
               </span>
-              <span class="text-white px-3 py-1 rounded-full font-semibold" [ngClass]="getPedagogicalApproachLabel(storyData.story.pedagogical_approach).color">
-                🎯 {{ getPedagogicalApproachLabel(storyData.story.pedagogical_approach).label }}
+              <span class="text-white px-3 py-1 rounded-full font-semibold"
+                [ngClass]="getPedagogicalApproachColor(storyData.story.pedagogical_approach)">
+                🎯 {{ getPedagogicalApproachLabel(storyData.story.pedagogical_approach) }}
               </span>
               <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full font-semibold">
                 📅 {{ formatDate(storyData.story.created_at) }}
               </span>
             </div>
           </div>
-          
-          <!-- Stats -->
+
+
           <div class="flex justify-center gap-6 mt-6 text-tiyc-body">
             <div class="text-center">
               <div class="font-bold text-tiyc-subhead">{{ getOrderedScenarios().length }}</div>
@@ -75,18 +110,16 @@
             </div>
           </div>
         </div>
-        
-        <!-- Story Content -->
+
         <div class="bg-white p-6">
-          <h2 class="text-tiyc-brown font-bold text-tiyc-heading mb-6 text-center flex items-center justify-center gap-2">
+          <h2
+            class="text-tiyc-brown font-bold text-tiyc-heading mb-6 text-center flex items-center justify-center gap-2">
             📖 Historia Completa
           </h2>
-          
-          <!-- Chapters -->
+
           <div class="space-y-12">
             <div *ngFor="let scenario of getOrderedScenarios(); let i = index" class="chapter-container">
-              
-              <!-- Chapter Header -->
+
               <div class="chapter-header">
                 <div class="flex justify-between items-center relative z-10">
                   <h3 class="font-bold text-tiyc-heading">{{ getChapterTitle(i + 1) }}</h3>
@@ -95,57 +128,51 @@
                   </span>
                 </div>
               </div>
-              
-              <!-- Chapter Content Layout -->
+
               <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
-                
-                <!-- Chapter Image -->
+
                 <div class="lg:col-span-2 relative chapter-image">
-                  <!-- ✨ IMAGEN CON FUNCIONALIDAD DE MODAL -->
-                  <div *ngIf="scenario.image" class="relative group cursor-pointer" (click)="openImageModal(scenario, i)">
-                    <img 
-                      [src]="getImageUrl(scenario.image.image_url)" 
-                      [alt]="'Capítulo ' + (i + 1) + ' - ' + scenario.description" 
-                      class="w-full h-80 lg:h-96 object-cover transition-all duration-300 group-hover:scale-105"
-                    >
-                    
-                    <!-- Overlay con botón de expandir -->
-                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                      <div class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
+                  <div *ngIf="scenario.image" class="relative group cursor-pointer"
+                    (click)="openImageModal(scenario, i)">
+                    <img [src]="getImageUrl(scenario.image.image_url)"
+                      [alt]="'Capítulo ' + (i + 1) + ' - ' + scenario.description"
+                      class="w-full h-80 lg:h-96 object-cover transition-all duration-300 group-hover:scale-105">
+
+                    <div
+                      class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                      <div
+                        class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
                         <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-4 shadow-lg">
                           <svg class="w-8 h-8 text-tiyc-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                           </svg>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
-                  <!-- ✨ NUEVO BOTÓN DE EXPANDIR (reemplaza al badge del número) -->
-                  <button 
-                    *ngIf="scenario.image"
-                    (click)="openImageModal(scenario, i)"
+
+                  <button *ngIf="scenario.image" (click)="openImageModal(scenario, i)"
                     class="absolute top-4 left-4 bg-tiyc-primary hover:bg-tiyc-primary-dark text-white rounded-full p-3 shadow-lg transition-all duration-300 transform hover:scale-110 z-10"
-                    title="Ver imagen en grande"
-                  >
+                    title="Ver imagen en grande">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM15 8h.01M8 16h.01"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM15 8h.01M8 16h.01"></path>
                     </svg>
                   </button>
-                  
-                  <!-- Estado sin imagen -->
-                  <div *ngIf="!scenario.image" class="w-full h-80 lg:h-96 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+
+                  <div *ngIf="!scenario.image"
+                    class="w-full h-80 lg:h-96 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <div class="text-center text-gray-500">
                       <div class="text-5xl mb-3">🖼️</div>
                       <div class="font-medium text-tiyc-body">Imagen no disponible</div>
                     </div>
                   </div>
                 </div>
-                
-                <!-- Narrative Content -->
+
                 <div class="lg:col-span-3 p-8 flex flex-col justify-center">
                   <div class="narrative-content reading-content prose prose-lg max-w-none">
-                    
+
                     <div class="mb-6">
                       <h4 class="text-tiyc-brown font-bold text-tiyc-subhead mb-4 border-b-2 border-tiyc-light pb-2">
                         En esta parte de la historia...
@@ -154,7 +181,7 @@
                         {{ scenario.description }}
                       </p>
                     </div>
-                    
+
                     <div class="mb-6">
                       <h4 class="text-tiyc-brown font-bold text-tiyc-subhead mb-4 border-b-2 border-tiyc-light pb-2">
                         La historia continúa...
@@ -163,49 +190,49 @@
                         <p>{{ getStoryContentForScene(i) }}</p>
                       </div>
                     </div>
-                    
+
                   </div>
                 </div>
               </div>
-              
+
               <div *ngIf="i < getOrderedScenarios().length - 1" class="chapter-separator"></div>
-              
+
             </div>
           </div>
-          
-          <!-- Story Ending -->
+
           <div class="story-ending text-center py-16 mt-12 rounded-2xl relative">
             <div class="relative z-10">
               <div class="text-7xl mb-6 animate-bounce">🌟</div>
               <h3 class="text-tiyc-brown font-bold text-tiyc-title mb-6">¡Fin de la Historia!</h3>
               <div class="max-w-2xl mx-auto">
                 <p class="text-gray-700 text-tiyc-subhead mb-6 leading-relaxed">
-                  Esta hermosa historia ha llegado a su final. Esperamos que haya despertado la imaginación, 
+                  Esta hermosa historia ha llegado a su final. Esperamos que haya despertado la imaginación,
                   transmitido valores importantes y creado momentos especiales de lectura.
                 </p>
                 <p class="text-gray-600 mb-8 text-tiyc-body">
                   Cada imagen y cada palabra fueron creadas especialmente para inspirar y educar.
                 </p>
               </div>
-              
+
               <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button (click)="createNew()" class="btn-tiyc-primary px-8 py-4 flex items-center justify-center gap-2 text-tiyc-subhead transform hover:scale-105 transition-all duration-200">
+                <button (click)="createNew()"
+                  class="btn-tiyc-primary px-8 py-4 flex items-center justify-center gap-2 text-tiyc-subhead transform hover:scale-105 transition-all duration-200">
                   ✨ Crear Nueva Historia
                 </button>
-                <button (click)="goBack()" class="btn-tiyc-secondary px-8 py-4 flex items-center justify-center gap-2 text-tiyc-subhead transform hover:scale-105 transition-all duration-200">
+                <button (click)="goBack()"
+                  class="btn-tiyc-secondary px-8 py-4 flex items-center justify-center gap-2 text-tiyc-subhead transform hover:scale-105 transition-all duration-200">
                   📚 Volver a Mi Biblioteca
                 </button>
               </div>
             </div>
           </div>
-          
+
         </div>
-        
+
       </div>
-      
+
     </div>
   </div>
 </div>
 
-<!-- ✨ MODAL DE IMAGEN - Componente independiente -->
 <app-image-modal></app-image-modal>

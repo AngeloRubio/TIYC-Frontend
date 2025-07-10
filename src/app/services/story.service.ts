@@ -1,6 +1,7 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { isPlatformBrowser } from '@angular/common';
 
 import {
@@ -18,7 +19,6 @@ import { APP_CONFIG } from '../config/app.config';
 export class StoryService {
   private readonly apiUrl = APP_CONFIG.API_BASE_URL;
 
-  // Estados reactivos optimizados
   private readonly storiesSubject = new BehaviorSubject<Story[]>([]);
   private readonly currentPreviewSubject = new BehaviorSubject<PreviewStoryResponse | null>(null);
 
@@ -30,10 +30,6 @@ export class StoryService {
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
-
-  /**
-   *  Genera preview de cuento sin guardar en BD
-   */
   generatePreview(request: GenerateStoryRequest): Observable<PreviewStoryResponse> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.PREVIEW_STORY}`;
     return this.http.post<PreviewStoryResponse>(url, request, {
@@ -41,9 +37,6 @@ export class StoryService {
     });
   }
 
-  /**
-   * Genera cuento completo y lo guarda directamente 
-   */
   generateCompleteStory(request: GenerateStoryRequest): Observable<PreviewStoryResponse> {
     const url = `${this.apiUrl}/generate-illustrated-story`;
     return this.http.post<PreviewStoryResponse>(url, request, {
@@ -51,9 +44,6 @@ export class StoryService {
     });
   }
 
-  /**
-   * Guarda un preview en la biblioteca
-   */
   savePreviewedStory(previewData: PreviewStoryResponse): Observable<ApiResponse<{ story_id: string }>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.SAVE_STORY}`;
     return this.http.post<ApiResponse<{ story_id: string }>>(url, previewData, {
@@ -87,10 +77,6 @@ export class StoryService {
     });
   }
 
-  /**
-   * Regenera imagen de escenario guardado en BD
-   * Para cuentos ya persistidos en la biblioteca
-   */
   regenerateScenarioImage(
     scenarioId: string,
     options?: {
@@ -104,9 +90,6 @@ export class StoryService {
     });
   }
 
-  /**
-   * Obtiene un cuento ilustrado completo por ID
-   */
   getIllustratedStory(storyId: string): Observable<ApiResponse<IllustratedStory>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.GET_STORY}/${storyId}`;
     return this.http.get<ApiResponse<IllustratedStory>>(url, {
@@ -114,9 +97,11 @@ export class StoryService {
     });
   }
 
-  /**
-   * Obtiene cuentos recientes
-   */
+  getStoryWithDetails(storyId: string): Observable<any> {
+    const url = `${this.apiUrl}/illustrated-stories/${storyId}`;
+    return this.http.get<any>(url, { headers: this.getHeaders() });
+  }
+
   getRecentStories(limit: number = 10): Observable<ApiResponse<Story[]>> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.RECENT_STORIES}?limit=${limit}`;
     return this.http.get<ApiResponse<Story[]>>(url, {
@@ -124,9 +109,6 @@ export class StoryService {
     });
   }
 
-  /**
-   * Obtiene cuentos de un profesor específico
-   */
   getTeacherStories(teacherId: string, limit: number = 10): Observable<{ success: boolean, stories?: Story[], error?: string }> {
     const url = `${this.apiUrl}${APP_CONFIG.ENDPOINTS.TEACHER_STORIES}/${teacherId}?limit=${limit}`;
     return this.http.get<{ success: boolean, stories?: Story[], error?: string }>(url, {
@@ -134,68 +116,70 @@ export class StoryService {
     });
   }
 
+  exportStoryToPDF(storyId: string, exportData: any): Observable<Blob> {
+    const url = `${this.apiUrl}/stories/${storyId}/export-pdf`;
+
+    return this.http.post(url, exportData, {
+      headers: this.getHeaders(),
+      responseType: 'blob'
+    }).pipe(
+      map((response: Blob) => {
+        console.log('✅ Respuesta PDF recibida:', response.size, 'bytes');
+        return response;
+      }),
+      catchError((error) => {
+        console.error('❌ Error en exportStoryToPDF:', error);
+        throw error;
+      })
+    );
+  }
+
+  deleteStory(storyId: string): Observable<any> {
+    const url = `${this.apiUrl}/stories/${storyId}`;
+    return this.http.delete<any>(url, { headers: this.getHeaders() });
+  }
 
   setCurrentPreview(preview: PreviewStoryResponse | null): void {
     this.currentPreviewSubject.next(preview);
   }
 
-  /**
-   * Obtiene el preview actual
-   */
   getCurrentPreview(): PreviewStoryResponse | null {
     return this.currentPreviewSubject.value;
   }
 
-  /**
-   * Actualiza la lista de cuentos
-   */
   updateStoriesList(stories: Story[]): void {
     this.storiesSubject.next(stories);
   }
 
-  /**
-   * Agrega un cuento a la lista
-   */
   addStoryToList(story: Story): void {
     const currentStories = this.storiesSubject.value;
     this.storiesSubject.next([story, ...currentStories]);
   }
 
-
-  /**
-   * Construye URL completa para imágenes
-   */
   getImageUrl(relativeUrl: string): string {
     if (!relativeUrl) return '';
 
     if (relativeUrl.startsWith('http')) {
-      return relativeUrl; // URL absoluta
+      return relativeUrl;
     }
     return `${this.apiUrl.replace('/api', '')}${relativeUrl}`;
   }
 
-  /**
-   * Valida request antes de enviar
-   */
   validateStoryRequest(request: GenerateStoryRequest): { valid: boolean, errors: string[] } {
     const errors: string[] = [];
 
-    // Validación de contexto
     if (!request.context || request.context.trim().length < 10) {
       errors.push('El contexto debe tener al menos 10 caracteres');
     }
 
-    // Validación de categoría
     if (!request.category || request.category.trim().length < 2) {
       errors.push('La categoría es requerida');
     }
 
-    // Validación de enfoque pedagógico
     if (!['montessori', 'waldorf', 'traditional'].includes(request.pedagogical_approach)) {
       errors.push('Enfoque pedagógico no válido');
     }
 
-    // Validación de longitud máxima
     if (request.context && request.context.length > APP_CONFIG.APP_SETTINGS.MAX_CONTEXT_LENGTH) {
       errors.push(`El contexto no puede exceder ${APP_CONFIG.APP_SETTINGS.MAX_CONTEXT_LENGTH} caracteres`);
     }
@@ -206,9 +190,6 @@ export class StoryService {
     };
   }
 
-  /**
-   * Genera headers con autenticación
-   */
   private getHeaders(): HttpHeaders {
     let headers = new HttpHeaders({
       'Content-Type': 'application/json'

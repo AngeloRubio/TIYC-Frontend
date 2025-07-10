@@ -7,8 +7,9 @@ export interface Story {
   context: string;
   category: string;
   pedagogical_approach: 'montessori' | 'waldorf' | 'traditional';
-  teacher_id?: string;
+  teacher_id: string;
   created_at: string;
+  target_age?: string;
 }
 
 export interface Scenario {

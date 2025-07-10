@@ -1,0 +1,278 @@
+<!-- templates/pdf/story_standard.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ metadata.title }}</title>
+    
+    <!-- Metadatos del PDF -->
+    <meta name="author" content="{{ metadata.author }}">
+    <meta name="subject" content="{{ metadata.subject }}">
+    <meta name="keywords" content="{{ metadata.keywords | join(', ') }}">
+    <meta name="creator" content="{{ metadata.creator }}">
+    
+    <style>
+        /* Estilos CSS se inyectan aquí por WeasyPrint */
+    </style>
+</head>
+<body>
+    <!-- PORTADA -->
+    <div class="cover-page">
+        <div class="cover-header">
+            <div class="logo-section">
+                <div class="logo-placeholder">
+                    <!-- Logo TIYC aquí -->
+                    <h1 class="logo-text">TIYC</h1>
+                    <p class="logo-subtitle">Tú Inspiras, Yo Creo</p>
+                </div>
+            </div>
+            
+            <div class="school-info">
+                <h2 class="school-name">{{ story.school_name or "Unidad Educativa Santa Fe" }}</h2>
+                <p class="school-subtitle">Sistema de Generación de Cuentos Ilustrados</p>
+            </div>
+        </div>
+        
+        <div class="cover-content">
+            <div class="story-title-section">
+                <h1 class="story-title">{{ story.title }}</h1>
+                
+                <div class="story-badges">
+                    <span class="badge category-badge">
+                        📚 {{ story.category }}
+                    </span>
+                    
+                    <span class="badge approach-badge approach-{{ story.pedagogical_approach }}">
+                        🎯 {{ pedagogical_labels.get(story.pedagogical_approach, story.pedagogical_approach) }}
+                    </span>
+                    
+                    <span class="badge age-badge">
+                        🎓 {{ story.target_age }}
+                    </span>
+                </div>
+                
+                <div class="story-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_scenarios }}</span>
+                        <span class="stat-label">Escenas</span>
+                    </div>
+                    
+                    {% if has_images %}
+                    <div class="stat-item">
+                        <span class="stat-number">{{ story.scenarios | selectattr("image") | list | length }}</span>
+                        <span class="stat-label">Ilustraciones</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-item">
+                        <span class="stat-number">{{ story.content | word_count }}</span>
+                        <span class="stat-label">Palabras</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cover-footer">
+            <div class="author-info">
+                <p class="author-label">Creado por:</p>
+                <p class="author-name">{{ story.teacher_name }}</p>
+                <p class="creation-date">{{ story.creation_date }}</p>
+            </div>
+            
+            <div class="generation-info">
+                <p class="generation-text">Generado el {{ generation_date }}</p>
+                <p class="watermark">{{ config.watermark or "TIYC - Tú Inspiras, Yo Creo" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- PÁGINA DE INFORMACIÓN PEDAGÓGICA -->
+    {% if config.include_metadata %}
+    <div class="info-page">
+        <h2 class="info-title">Información Pedagógica</h2>
+        
+        <div class="pedagogical-section">
+            <h3 class="section-title">Enfoque Pedagógico</h3>
+            
+            {% if story.pedagogical_approach == 'montessori' %}
+            <div class="approach-description">
+                <p><strong>Método Montessori:</strong> Este cuento está diseñado siguiendo los principios Montessori, enfocándose en:</p>
+                <ul>
+                    <li>Experiencias de aprendizaje autodirigido</li>
+                    <li>Actividades prácticas y realistas</li>
+                    <li>Desarrollo de la autonomía e independencia</li>
+                    <li>Respeto por el ritmo natural de aprendizaje</li>
+                </ul>
+            </div>
+            {% elif story.pedagogical_approach == 'waldorf' %}
+            <div class="approach-description">
+                <p><strong>Pedagogía Waldorf:</strong> Este cuento incorpora elementos de la pedagogía Waldorf:</p>
+                <ul>
+                    <li>Desarrollo integral del niño</li>
+                    <li>Conexión con la naturaleza y los ritmos estacionales</li>
+                    <li>Fomento de la imaginación y creatividad</li>
+                    <li>Aprendizaje a través del arte y la experiencia sensorial</li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="approach-description">
+                <p><strong>Enfoque Reggio Emilia:</strong> Este cuento utiliza principios de Reggio Emilia:</p>
+                <ul>
+                    <li>El niño como protagonista de su aprendizaje</li>
+                    <li>Aprendizaje colaborativo y participativo</li>
+                    <li>Valoración de la expresión creativa</li>
+                    <li>Ambientes de aprendizaje estimulantes</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="usage-suggestions">
+            <h3 class="section-title">Sugerencias de Uso</h3>
+            <ul class="suggestions-list">
+                <li>Lea el cuento en voz alta, permitiendo que los niños observen las ilustraciones</li>
+                <li>Fomente la participación activa haciendo preguntas sobre las imágenes</li>
+                <li>Propicie discusiones sobre los valores y enseñanzas del cuento</li>
+                <li>Invite a los niños a recrear escenas o continuar la historia</li>
+                {% if story.pedagogical_approach == 'montessori' %}
+                <li>Conecte elementos del cuento con actividades prácticas de la vida real</li>
+                {% elif story.pedagogical_approach == 'waldorf' %}
+                <li>Utilice elementos artísticos como dibujo o música para complementar la lectura</li>
+                {% else %}
+                <li>Encourage expresión creativa a través de actividades posteriores a la lectura</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- CONTENIDO PRINCIPAL DEL CUENTO -->
+    <div class="story-content">
+        
+        <!-- Título y resumen -->
+        <div class="content-header">
+            <h1 class="content-title">{{ story.title }}</h1>
+            {% if story.content | length > 200 %}
+            <div class="story-summary">
+                <p><em>{{ story.content | truncate_words(30) }}</em></p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Escenarios del cuento -->
+        {% for scenario in story.scenarios %}
+        <div class="scenario-section" data-scenario="{{ loop.index }}">
+            
+            <!-- Header del escenario -->
+            <div class="scenario-header">
+                <h2 class="scenario-title">
+                    {% if loop.index == 1 %}
+                        🌟 El Comienzo de la Aventura
+                    {% elif loop.index == story.scenarios | length %}
+                        🎉 El Final de la Historia
+                    {% elif loop.index == 2 %}
+                        🎭 El Desarrollo de la Historia
+                    {% else %}
+                        📖 Capítulo {{ loop.index }}
+                    {% endif %}
+                </h2>
+                <span class="scenario-number">{{ loop.index }} / {{ story.scenarios | length }}</span>
+            </div>
+            
+            <!-- Imagen del escenario (si existe) -->
+            {% if scenario.image and config.include_images %}
+            <div class="scenario-image-container">
+                <img src="{{ scenario.image.image_url }}" 
+                     alt="Ilustración del capítulo {{ loop.index }}" 
+                     class="scenario-image">
+                
+                {% if scenario.image.prompt %}
+                <div class="image-caption">
+                    <p class="caption-text">{{ scenario.description }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Contenido narrativo del escenario -->
+            <div class="scenario-content">
+                <div class="scenario-description">
+                    <p class="description-text">{{ scenario.description }}</p>
+                </div>
+                
+                <!-- Dividir contenido del cuento proporcionalmente -->
+                {% set content_parts = story.content.split('\n\n') %}
+                {% set part_index = ((loop.index0 * content_parts | length) / story.scenarios | length) | int %}
+                {% if content_parts[part_index:((loop.index * content_parts | length) / story.scenarios | length) | int] %}
+                <div class="narrative-content">
+                    {% for paragraph in content_parts[part_index:((loop.index * content_parts | length) / story.scenarios | length) | int] %}
+                    <p class="narrative-paragraph">{{ paragraph.strip() }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Separador entre escenarios (excepto el último) -->
+            {% if not loop.last %}
+            <div class="scenario-separator">
+                <div class="separator-line"></div>
+                <div class="separator-icon">✦</div>
+                <div class="separator-line"></div>
+            </div>
+            {% endif %}
+            
+        </div>
+        {% endfor %}
+        
+        <!-- Final del cuento -->
+        <div class="story-ending">
+            <div class="ending-decoration">
+                <span class="ending-icon">🌟</span>
+            </div>
+            <h3 class="ending-title">Fin de la Historia</h3>
+            <p class="ending-message">
+                Esta hermosa historia ha llegado a su final. Esperamos que haya despertado 
+                la imaginación, transmitido valores importantes y creado momentos especiales de lectura.
+            </p>
+        </div>
+    </div>
+    
+    <!-- PIE DE PÁGINA INFORMATIVO -->
+    <div class="document-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p class="footer-title">TIYC - Tú Inspiras, Yo Creo</p>
+                <p class="footer-subtitle">Sistema de Generación de Cuentos Ilustrados</p>
+                <p class="footer-school">{{ story.school_name or "Unidad Educativa Santa Fe" }}</p>
+            </div>
+            
+            <div class="footer-center">
+                <div class="document-info">
+                    <p><strong>Documento:</strong> {{ story.title }}</p>
+                    <p><strong>Autor:</strong> {{ story.teacher_name }}</p>
+                    <p><strong>Fecha de creación:</strong> {{ story.creation_date }}</p>
+                    <p><strong>Generado:</strong> {{ generation_date }}</p>
+                </div>
+            </div>
+            
+            <div class="footer-right">
+                <div class="technical-info">
+                    <p class="tech-line">Enfoque: {{ pedagogical_labels.get(story.pedagogical_approach, story.pedagogical_approach) }}</p>
+                    <p class="tech-line">Categoría: {{ story.category }}</p>
+                    <p class="tech-line">Dirigido a: {{ story.target_age }}</p>
+                    <p class="tech-line">Escenarios: {{ total_scenarios }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p class="copyright">
+                © 2025 TIYC - Todos los derechos reservados. 
+                Este documento fue generado automáticamente por el sistema TIYC.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
