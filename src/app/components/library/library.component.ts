@@ -6,34 +6,33 @@ import { Subscription } from 'rxjs';
 import { StoryService } from '../../services/story.service';
 import { AuthService } from '../../services/auth.service';
 import { Story, Teacher } from '../../models/story.model';
-
+import { ImageModalService, ImageModalData } from '../../services/image-modal.service';
+import { ImageModalComponent } from '../shared/image-modal/image-modal.component';
 
 @Component({
   selector: 'app-library',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ImageModalComponent],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.css']
 })
 export class LibraryComponent implements OnInit, OnDestroy {
   
-  // Estado del componente
   stories: Story[] = [];
   isLoading = true;
   error: string | null = null;
   currentUser: Teacher | null = null;
   
-  // Filtros y búsqueda
   searchTerm = '';
   selectedFilter: 'all' | 'recent' | 'category' = 'all';
   
- 
   private subscriptions = new Subscription();
   
   constructor(
     private router: Router,
     private storyService: StoryService,
-    private authService: AuthService
+    private authService: AuthService,
+    private imageModalService: ImageModalService
   ) {}
   
   ngOnInit(): void {
@@ -44,9 +43,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
   
-  /**
-   * Inicializa el componente obteniendo usuario y cargando cuentos
-   */
   private initializeComponent(): void {
     const userSub = this.authService.currentUser$.subscribe(
       user => {
@@ -62,9 +58,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.subscriptions.add(userSub);
   }
   
-  /**
-   * Carga los cuentos del usuario actual
-   */
   private loadUserStories(): void {
     if (!this.currentUser?.id) {
       this.error = 'Usuario no identificado';
@@ -100,9 +93,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.subscriptions.add(storiesSub);
   }
   
-  /**
-   * Navega a la página de creación de cuento
-   */
   goToCreate(): void {
     this.router.navigate(['/crear']);
   }
@@ -111,9 +101,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/cuento', storyId]);
   }
   
-  /**
-   * Filtrar cuentos por búsqueda
-   */
   onSearchChange(searchTerm: string): void {
     this.searchTerm = searchTerm.toLowerCase();
   }
@@ -122,13 +109,9 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.selectedFilter = filter;
   }
   
-  /**
-   * Obtener cuentos filtrados
-   */
   getFilteredStories(): Story[] {
     let filtered = [...this.stories];
     
-    // Filtro por búsqueda
     if (this.searchTerm) {
       filtered = filtered.filter(story => 
         story.title.toLowerCase().includes(this.searchTerm) ||
@@ -137,7 +120,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
       );
     }
     
-    // Filtro por tipo
     switch (this.selectedFilter) {
       case 'recent':
         filtered = filtered.sort((a, b) => 
@@ -152,9 +134,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return filtered;
   }
   
-  /**
-   * Obtener información completa del usuario
-   */
   getUserInfo(): string {
     if (!this.currentUser) {
       return 'Información no disponible';
@@ -177,9 +156,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return info;
   }
   
-  /**
-   * Obtener nombre real del usuario
-   */
   getUserDisplayName(): string {
     if (!this.currentUser) {
       return 'Profesor';
@@ -196,7 +172,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     
     return 'Profesor';
   }
-  
 
   getPedagogicalApproachLabel(approach: string): {label: string, color: string} {
     switch (approach) {
@@ -211,9 +186,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     }
   }
   
-  /**
-   * Formatear fecha para mostrar
-   */
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES', {
@@ -223,9 +195,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     });
   }
   
-  /**
-   * Obtener emoji para categoría
-   */
   getCategoryEmoji(category: string): string {
     const categoryLower = category.toLowerCase();
     
@@ -243,16 +212,10 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return '📖';
   }
   
-  /**
-   * Verificar si hay cuentos para mostrar
-   */
   hasStories(): boolean {
     return this.getFilteredStories().length > 0;
   }
   
-  /**
-   * Obtener mensaje de error cuando no hay cuentos
-   */
   getEmptyMessage(): string {
     if (this.searchTerm) {
       return `No se encontraron cuentos que coincidan con "${this.searchTerm}"`;
@@ -263,5 +226,45 @@ export class LibraryComponent implements OnInit, OnDestroy {
     }
     
     return 'Aún no has creado ningún cuento. ¡Comienza creando tu primera historia!';
+  }
+
+  openImageModal(story: Story, categoryIndex: number): void {
+    const imageData: ImageModalData = {
+      imageUrl: this.getCategoryGradientPlaceholder(categoryIndex),
+      title: story.title,
+      description: story.context || 'Vista previa del cuento',
+      chapterNumber: 1,
+      prompt: `Cuento de categoría: ${story.category}`
+    };
+    
+    this.imageModalService.openModal(imageData);
+  }
+
+  private getCategoryGradientPlaceholder(index: number): string {
+    // Crear un placeholder visual basado en el emoji de categoría
+    return 'data:image/svg+xml;base64,' + btoa(`
+      <svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad${index}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${this.getGradientColors(index)[0]};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${this.getGradientColors(index)[1]};stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="400" height="300" fill="url(#grad${index})" />
+        <text x="200" y="150" font-family="Arial" font-size="60" fill="white" text-anchor="middle" dominant-baseline="middle">📖</text>
+      </svg>
+    `);
+  }
+
+  private getGradientColors(index: number): [string, string] {
+    const gradients: [string, string][] = [
+      ['#93c5fd', '#a855f7'], // blue to purple
+      ['#fde047', '#f472b6'], // yellow to pink
+      ['#86efac', '#3b82f6'], // green to blue
+      ['#fca5a5', '#fb923c'], // red to orange
+      ['#c084fc', '#6366f1'], // purple to indigo
+      ['#5eead4', '#06b6d4']  // teal to cyan
+    ];
+    return gradients[index % 6];
   }
 }

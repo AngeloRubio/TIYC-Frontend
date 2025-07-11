@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription, BehaviorSubject, filter, map } from 'rxjs';
+import { Observable, Subscription, BehaviorSubject, filter, interval, takeWhile } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import { StoryService } from '../../services/story.service';
 import { PdfService, PDFValidationResponse } from '../../services/pdf.service';
 import { Story, Scenario, Image as StoryImage } from '../../models/story.model';
 import { ImageModalComponent } from '../shared/image-modal/image-modal.component';
+import { ImageModalService, ImageModalData } from '../../services/image-modal.service';
 
 interface ValidationResult {
   valid: boolean;
@@ -26,15 +27,13 @@ interface ValidationResult {
   imports: [CommonModule, ImageModalComponent]
 })
 export class StoryDetailComponent implements OnInit, OnDestroy {
-  // Propiedades principales
   story: Story | null = null;
   scenarios: Scenario[] = [];
   images: StoryImage[] = [];
-  storyData: any = null; // Para compatibilidad con template existente
+  storyData: any = null;
   isLoading = true;
   error: string | null = null;
   
-  // Propiedades para PDF
   isExporting: boolean = false;
   exportProgress: number = 0;
   exportMessage: string = '';
@@ -42,19 +41,38 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   pdfValidationResult: ValidationResult | null = null;
   showValidationDetails = false;
   
-  // Propiedades para navegación
-  private storyIdSubject = new BehaviorSubject<string | null>(null);
-  private subscriptions: Subscription[] = [];
+  private readonly storyIdSubject = new BehaviorSubject<string | null>(null);
+  private readonly subscriptions: Subscription[] = [];
+  private readonly chapterTitles = [
+    '🌟 El Comienzo de la Aventura',
+    '🎭 El Desarrollo de la Historia',
+    '🎨 Momentos Especiales',
+    '🌈 Descubrimientos Importantes',
+    '💫 El Clímax de la Historia',
+    '🎉 El Final Feliz'
+  ];
+
+  private readonly progressSteps = [
+    { progress: 10, message: 'Validando contenido del cuento...' },
+    { progress: 25, message: 'Preparando estructura del PDF...' },
+    { progress: 40, message: 'Procesando imágenes...' },
+    { progress: 60, message: 'Aplicando formato pedagógico...' },
+    { progress: 75, message: 'Optimizando para niños...' },
+    { progress: 90, message: 'Finalizando documento...' },
+    { progress: 100, message: 'PDF generado exitosamente' }
+  ];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private storyService: StoryService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private imageModalService: ImageModalService
   ) {}
 
   ngOnInit(): void {
     this.initializeComponent();
+    this.subscribeToExportProgress();
   }
 
   ngOnDestroy(): void {
@@ -80,7 +98,16 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     this.subscriptions.push(storyIdSubscription, loadSubscription);
   }
 
-  // Método público para compatibilidad con template
+  private subscribeToExportProgress(): void {
+    const progressSubscription = this.pdfService.exportProgress$.subscribe(progress => {
+      this.isExporting = progress.isExporting;
+      this.exportProgress = progress.progress;
+      this.exportMessage = progress.message;
+    });
+
+    this.subscriptions.push(progressSubscription);
+  }
+
   loadStoryDetail(storyId?: string): void {
     if (!storyId) {
       const currentStoryId = this.storyIdSubject.value;
@@ -102,7 +129,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
           this.story = response.story;
           this.scenarios = response.scenarios || [];
           
-          // Extraer imágenes de los scenarios
           this.images = [];
           this.scenarios.forEach(scenario => {
             if (scenario.image) {
@@ -110,7 +136,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
             }
           });
           
-          this.storyData = response; // Para compatibilidad con template
+          this.storyData = response;
           
           console.log(`✅ Cuento cargado: "${this.story?.title}"`);
           console.log(`📚 Escenarios: ${this.scenarios.length}`);
@@ -136,11 +162,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     }
 
     console.log('📄 Iniciando exportación PDF del cuento:', this.story.id);
-    this.isExporting = true;
-    this.exportProgress = 0;
-    this.exportMessage = 'Preparando exportación...';
-
-    this.updateProgress(10, 'Validando contenido...');
 
     const pdfConfig = {
       format: 'A4',
@@ -151,52 +172,378 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
       child_friendly_layout: true
     };
 
-    const exportData = {
-      config: pdfConfig,
-      teacher_id: null
-    };
+    this.startProgressSimulation();
 
-    this.updateProgress(30, 'Generando PDF...');
-
-    this.storyService.exportStoryToPDF(this.story.id, exportData)
+    this.storyService.exportStoryToPDF(this.story.id, { config: pdfConfig })
       .subscribe({
         next: (response: Blob) => {
-          this.updateProgress(80, 'Preparando descarga...');
-          
-          console.log('✅ PDF generado exitosamente');
-          
-          const filename = `${this.story?.title?.replace(/[^a-zA-Z0-9\s]/g, '_') || 'cuento'}.pdf`;
-          
-          const url = window.URL.createObjectURL(response);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = filename;
-          
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          window.URL.revokeObjectURL(url);
-          
-          this.updateProgress(100, 'Descarga completada');
-          
-          setTimeout(() => {
-            this.isExporting = false;
-            this.exportProgress = 0;
-            this.exportMessage = '';
-          }, 1500);
-          
-          console.log(`✅ PDF descargado: ${filename}`);
+          this.completeExport(response);
         },
         error: (error: any) => {
-          console.error('❌ Error exportando PDF:', error);
-          this.isExporting = false;
-          this.exportProgress = 0;
-          this.exportMessage = '';
-          
-          this.showErrorMessage('Error al generar el PDF. Por favor, inténtalo de nuevo.');
+          this.handleExportError(error);
         }
       });
+  }
+
+  private startProgressSimulation(): void {
+    this.pdfService.setExportProgress(true, 0, 'Iniciando exportación...');
+    
+    let currentStep = 0;
+    
+    const progressTimer = interval(800).pipe(
+      takeWhile(() => currentStep < this.progressSteps.length && this.isExporting)
+    ).subscribe(() => {
+      if (currentStep < this.progressSteps.length) {
+        const step = this.progressSteps[currentStep];
+        this.pdfService.setExportProgress(true, step.progress, step.message);
+        currentStep++;
+      }
+    });
+
+    this.subscriptions.push(progressTimer);
+  }
+
+  private completeExport(response: Blob): void {
+    this.pdfService.setExportProgress(true, 100, 'Preparando descarga...');
+    
+    setTimeout(() => {
+      console.log('✅ PDF generado exitosamente');
+      
+      const filename = `${this.story?.title?.replace(/[^a-zA-Z0-9\s]/g, '_') || 'cuento'}.pdf`;
+      
+      const url = window.URL.createObjectURL(response);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      window.URL.revokeObjectURL(url);
+      
+      this.pdfService.setExportProgress(false, 0, '');
+      
+      console.log(`✅ PDF descargado: ${filename}`);
+    }, 500);
+  }
+
+  private handleExportError(error: any): void {
+    console.error('❌ Error exportando PDF:', error);
+    this.pdfService.setExportProgress(false, 0, '');
+    this.showErrorMessage('Error al generar el PDF. Por favor, inténtalo de nuevo.');
+  }
+
+  getStoryContentForScene(sceneIndex: number): string {
+    if (!this.story?.content) return '';
+    
+    const content = this.story.content;
+    const activityIndex = content.indexOf('**Actividad');
+    
+    let narrativeContent = content;
+    if (activityIndex !== -1) {
+      narrativeContent = content.substring(0, activityIndex).trim();
+    }
+    
+    const paragraphs = narrativeContent
+      .split(/\n\s*\n/)
+      .filter(p => p.trim().length > 20)
+      .map(p => p.trim());
+    
+    if (paragraphs.length === 0) return '';
+    
+    const totalScenarios = this.scenarios.length;
+    
+    if (paragraphs.length >= totalScenarios) {
+      const paragraphsPerScene = Math.floor(paragraphs.length / totalScenarios);
+      const extraParagraphs = paragraphs.length % totalScenarios;
+      
+      let startIndex = 0;
+      for (let i = 0; i < sceneIndex; i++) {
+        startIndex += paragraphsPerScene + (i < extraParagraphs ? 1 : 0);
+      }
+      
+      const endIndex = startIndex + paragraphsPerScene + (sceneIndex < extraParagraphs ? 1 : 0);
+      return paragraphs.slice(startIndex, endIndex).join('\n\n');
+      
+    } else {
+      if (sceneIndex < paragraphs.length) {
+        return paragraphs[sceneIndex];
+      } else {
+        const scenario = this.scenarios[sceneIndex];
+        return `${scenario?.description || 'Continuando la historia...'}\n\nEn esta parte de la aventura, los personajes continúan desarrollando la trama principal de una manera emocionante y educativa.`;
+      }
+    }
+  }
+
+  getPedagogicalContent(): string {
+    if (!this.story?.content) return '';
+    
+    const approach = this.story.pedagogical_approach || 'traditional';
+    
+    switch (approach.toLowerCase()) {
+      case 'montessori':
+        return this.extractMontessoriActivities();
+      case 'waldorf':
+        return this.extractWaldorfActivities();
+      case 'traditional':
+        return this.extractTraditionalMoraleja();
+      default:
+        return this.extractTraditionalMoraleja();
+    }
+  }
+
+  private extractMontessoriActivities(): string {
+    const content = this.story!.content;
+    const activityIndex = content.indexOf('**Actividad');
+    
+    if (activityIndex === -1) return '';
+    
+    const messageIndex = content.indexOf('**Mensaje positivo');
+    const endIndex = messageIndex !== -1 ? messageIndex : content.length;
+    
+    let activities = content.substring(activityIndex, endIndex).trim();
+    activities = this.cleanMarkdownFormatting(activities);
+    
+    return activities;
+  }
+
+  private extractWaldorfActivities(): string {
+    const content = this.story!.content;
+    const activityIndex = content.indexOf('**Actividad');
+    
+    if (activityIndex === -1) {
+      return this.generateWaldorfContent();
+    }
+    
+    const messageIndex = content.indexOf('**Mensaje positivo');
+    const endIndex = messageIndex !== -1 ? messageIndex : content.length;
+    
+    let activities = content.substring(activityIndex, endIndex).trim();
+    activities = this.cleanMarkdownFormatting(activities);
+    
+    return activities;
+  }
+
+  private extractTraditionalMoraleja(): string {
+    const content = this.story!.content;
+    
+    const moralejaPatterns = [
+      /Y.*aprendi[óo].*que/i,
+      /La.*moraleja.*es/i,
+      /As[íi].*aprendemos.*que/i,
+      /Esta.*historia.*nos.*ense[ñn]a/i,
+      /La.*lecci[óo]n.*de.*esta.*historia/i
+    ];
+    
+    const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+    const lastParagraphs = paragraphs.slice(-3);
+    
+    for (const paragraph of lastParagraphs) {
+      for (const pattern of moralejaPatterns) {
+        if (pattern.test(paragraph)) {
+          return this.cleanMarkdownFormatting(paragraph);
+        }
+      }
+    }
+    
+    if (lastParagraphs.length > 0) {
+      const lastParagraph = lastParagraphs[lastParagraphs.length - 1];
+      
+      if (!lastParagraph.includes('**Actividad') && lastParagraph.length > 50) {
+        return `La historia nos enseña que: ${this.cleanMarkdownFormatting(lastParagraph)}`;
+      }
+    }
+    
+    return this.generateTraditionalMoraleja();
+  }
+
+  private generateWaldorfContent(): string {
+    const category = this.story!.category.toLowerCase();
+    const title = this.story!.title;
+    
+    const waldorfActivities: { [key: string]: string } = {
+      'arte': `Actividades Creativas Waldorf:
+    
+1. Pintura con acuarelas: Recrea los colores y emociones de "${title}" usando acuarelas, permitiendo que los colores se mezclen libremente en papel húmedo.
+
+2. Modelado en cera: Crea figuras de los personajes principales usando cera de abeja, sintiendo las formas emerger naturalmente.
+
+3. Narración rítmica: Cuenta la historia usando gestos y movimientos que acompañen el ritmo natural del cuento.`,
+
+      'naturaleza': `Conexión con la Naturaleza (Waldorf):
+    
+1. Observación contemplativa: Sal al jardín o parque para observar los elementos naturales presentes en "${title}", dibujando con suavidad lo que observas.
+
+2. Recolección artística: Crea una mesa de estación con elementos naturales que representen los momentos del cuento.
+
+3. Círculo de gratitud: En grupo, expresen gratitud por los elementos naturales que aparecen en la historia.`,
+
+      'default': `Experiencias Artísticas Waldorf:
+    
+1. Dibujo de formas: Dibuja las formas principales de "${title}" usando movimientos amplios y rítmicos, comenzando desde el centro hacia afuera.
+
+2. Trabajo manual: Crea un objeto representativo del cuento usando materiales naturales (lana, madera, piedras).
+
+3. Euritmia: Expresa los sentimientos del cuento a través de movimientos corporales armoniosos.`
+    };
+    
+    return waldorfActivities[category] || waldorfActivities['default'];
+  }
+
+  private generateTraditionalMoraleja(): string {
+    const category = this.story!.category.toLowerCase();
+    
+    const moralejas: { [key: string]: string } = {
+      'amistad': 'La verdadera amistad se basa en el respeto, la ayuda mutua y la confianza. Los buenos amigos nos apoyan en los momentos difíciles y celebran nuestros logros.',
+      'aventura': 'Cada aventura nos enseña algo nuevo sobre nosotros mismos y el mundo. El coraje no es la ausencia de miedo, sino actuar a pesar de él.',
+      'ciencia': 'La curiosidad y el deseo de aprender nos llevan a hacer grandes descubrimientos. Cada pregunta es el inicio de una nueva aventura del conocimiento.',
+      'valores': 'Los valores como la honestidad, la bondad y la perseverancia son los cimientos de una vida plena y de relaciones significativas.',
+      'familia': 'La familia es nuestro primer hogar del corazón, donde aprendemos a amar, compartir y crecer juntos con comprensión y apoyo mutuo.',
+      'default': 'Cada historia nos deja una enseñanza valiosa que podemos aplicar en nuestra vida diaria para ser mejores personas y construir un mundo más hermoso.'
+    };
+    
+    return `Moraleja de la historia: ${moralejas[category] || moralejas['default']}`;
+  }
+
+  private cleanMarkdownFormatting(text: string): string {
+    return text
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/^\s*[-*+]\s/gm, '')
+      .replace(/^\s*\d+\.\s/gm, '')
+      .trim();
+  }
+
+  hasPedagogicalContent(): boolean {
+    return this.getPedagogicalContent().length > 0;
+  }
+
+  getPedagogicalTitle(): string {
+    if (!this.story?.pedagogical_approach) return 'Contenido Pedagógico';
+    
+    const approach = this.story.pedagogical_approach.toLowerCase();
+    
+    switch (approach) {
+      case 'montessori':
+        return 'Actividades Montessori';
+      case 'waldorf':
+        return 'Experiencias Waldorf';
+      case 'traditional':
+        return 'Moraleja del Cuento';
+      default:
+        return 'Contenido Pedagógico';
+    }
+  }
+
+  getPedagogicalIcon(): string {
+    if (!this.story?.pedagogical_approach) return '📚';
+    
+    const approach = this.story.pedagogical_approach.toLowerCase();
+    
+    switch (approach) {
+      case 'montessori':
+        return '🔬';
+      case 'waldorf':
+        return '🎨';
+      case 'traditional':
+        return '💫';
+      default:
+        return '📚';
+    }
+  }
+
+  getPedagogicalColor(): string {
+    if (!this.story?.pedagogical_approach) return 'from-blue-50 to-indigo-50';
+    
+    const approach = this.story.pedagogical_approach.toLowerCase();
+    
+    switch (approach) {
+      case 'montessori':
+        return 'from-red-50 to-pink-50';
+      case 'waldorf':
+        return 'from-purple-50 to-violet-50';
+      case 'traditional':
+        return 'from-blue-50 to-indigo-50';
+      default:
+        return 'from-blue-50 to-indigo-50';
+    }
+  }
+
+  getPedagogicalBorderColor(): string {
+    if (!this.story?.pedagogical_approach) return 'border-blue-200';
+    
+    const approach = this.story.pedagogical_approach.toLowerCase();
+    
+    switch (approach) {
+      case 'montessori':
+        return 'border-red-200';
+      case 'waldorf':
+        return 'border-purple-200';
+      case 'traditional':
+        return 'border-blue-200';
+      default:
+        return 'border-blue-200';
+    }
+  }
+
+  getPedagogicalTextColor(): string {
+    if (!this.story?.pedagogical_approach) return 'text-blue-700';
+    
+    const approach = this.story.pedagogical_approach.toLowerCase();
+    
+    switch (approach) {
+      case 'montessori':
+        return 'text-red-700';
+      case 'waldorf':
+        return 'text-purple-700';
+      case 'traditional':
+        return 'text-blue-700';
+      default:
+        return 'text-blue-700';
+    }
+  }
+
+  getCompleteNarrative(): string {
+    if (!this.story?.content) return '';
+    
+    const content = this.story.content;
+    const activityIndex = content.indexOf('**Actividad');
+    
+    if (activityIndex !== -1) {
+      return content.substring(0, activityIndex).trim();
+    }
+    
+    return content;
+  }
+
+  openImageModal(scenario: Scenario, index: number): void {
+    if (!scenario.image) return;
+
+    const allImages: ImageModalData[] = this.getOrderedScenarios()
+      .filter(s => s.image)
+      .map((s, idx) => ({
+        imageUrl: this.getImageUrl(s.image!.image_url),
+        title: this.getChapterTitle(idx + 1),
+        description: s.description,
+        chapterNumber: idx + 1,
+        prompt: s.image!.prompt
+      }));
+
+    const currentIndex = allImages.findIndex(img => img.chapterNumber === index + 1);
+
+    const imageData: ImageModalData = {
+      imageUrl: this.getImageUrl(scenario.image.image_url),
+      title: this.getChapterTitle(index + 1),
+      description: scenario.description,
+      chapterNumber: index + 1,
+      prompt: scenario.image.prompt,
+      allImages: allImages,
+      currentIndex: currentIndex >= 0 ? currentIndex : 0
+    };
+
+    this.imageModalService.openModal(imageData);
   }
 
   validateForPdf(): void {
@@ -212,7 +559,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
       next: (result: PDFValidationResponse) => {
         console.log('📋 Resultado de validación completo:', result);
         
-        // Convertir PDFValidationResponse a ValidationResult
         this.pdfValidationResult = {
           valid: result.success || false,
           errors: result.error ? [result.error] : [],
@@ -268,7 +614,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     const confirmDelete = confirm(`¿Estás seguro de que quieres eliminar el cuento "${this.story.title}"?`);
     
     if (confirmDelete) {
-      // Simulación de eliminación - adaptar según tu StoryService
       console.log('Eliminar cuento:', this.story.id);
       this.router.navigate(['/biblioteca']);
     }
@@ -278,16 +623,10 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     this.router.navigate(['/crear-cuento']);
   }
 
-  private updateProgress(progress: number, message: string): void {
-    this.exportProgress = progress;
-    this.exportMessage = message;
-  }
-
   private showErrorMessage(message: string): void {
     alert(message);
   }
 
-  // Métodos para compatibilidad con template existente
   getCategoryEmoji(category: string): string {
     const emojis: { [key: string]: string } = {
       'aventura': '🗺️',
@@ -345,21 +684,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
   }
 
   getChapterTitle(chapterNumber: number): string {
-    const titles = [
-      '🌟 El Comienzo de la Aventura',
-      '🎭 El Desarrollo de la Historia',
-      '🎨 Momentos Especiales',
-      '🌈 Descubrimientos Importantes',
-      '💫 El Clímax de la Historia',
-      '🎉 El Final Feliz'
-    ];
-    
-    return titles[chapterNumber - 1] || `📖 Capítulo ${chapterNumber}`;
-  }
-
-  openImageModal(scenario: Scenario, index: number): void {
-    console.log('Abrir modal de imagen:', scenario, index);
-    // Implementar modal de imagen
+    return this.chapterTitles[chapterNumber - 1] || `📖 Capítulo ${chapterNumber}`;
   }
 
   getImageUrl(imageUrl: string): string {
@@ -372,22 +697,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     return `http://localhost:5000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
   }
 
-  getStoryContentForScene(sceneIndex: number): string {
-    if (!this.story?.content) return '';
-    
-    // Dividir el contenido en párrafos para cada escena
-    const paragraphs = this.story.content.split('\n').filter(p => p.trim().length > 0);
-    
-    if (sceneIndex < paragraphs.length) {
-      return paragraphs[sceneIndex];
-    }
-    
-    // Si no hay suficientes párrafos, usar descripción del escenario
-    const scenario = this.scenarios[sceneIndex];
-    return scenario?.description || 'Contenido del escenario...';
-  }
-
-  // Métodos auxiliares para el template
   getValidationStatusClass(): string {
     if (!this.pdfValidationResult) return '';
     return this.pdfValidationResult.valid ? 'text-success' : 'text-danger';

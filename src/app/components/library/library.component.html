@@ -1,7 +1,6 @@
 <div class="container mx-auto px-4 py-8">
   <div class="container-tiyc">
 
-
     <div class="header-tiyc">
       <div class="flex flex-col sm:flex-row justify-between items-center">
         <div>
@@ -12,7 +11,6 @@
         </div>
       </div>
     </div>
-
 
     <div class="p-6">
 
@@ -62,7 +60,6 @@
         </div>
       </div>
 
-   
       <div *ngIf="error && !isLoading" class="text-center py-16">
         <div class="text-6xl mb-6">😞</div>
         <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">Error al cargar la biblioteca</h3>
@@ -92,7 +89,7 @@
           (click)="viewStory(story.id)">
 
           <!-- Imagen/Icono del cuento -->
-          <div class="h-48 bg-gradient-to-br flex items-center justify-center text-4xl" [ngClass]="{
+          <div class="h-48 bg-gradient-to-br flex items-center justify-center text-4xl relative group" [ngClass]="{
                  'from-blue-200 to-purple-200': i % 6 === 0,
                  'from-yellow-200 to-pink-200': i % 6 === 1,
                  'from-green-200 to-blue-200': i % 6 === 2,
@@ -101,6 +98,17 @@
                  'from-teal-200 to-cyan-200': i % 6 === 5
                }">
             {{ getCategoryEmoji(story.category) }}
+            
+            <!-- Botón de expandir imagen -->
+            <button 
+              (click)="openImageModal(story, i); $event.stopPropagation()"
+              class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-200"
+              title="Vista previa">
+              <svg class="w-4 h-4 text-tiyc-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+              </svg>
+            </button>
           </div>
 
           <!-- Información del cuento -->
@@ -109,7 +117,6 @@
               {{ story.title }}
             </h3>
 
-            
             <div class="flex justify-between items-center mb-3">
               <span class="text-gray-500 text-tiyc-small">
                 {{ formatDate(story.created_at) }}
@@ -120,7 +127,6 @@
               </span>
             </div>
 
-     
             <div class="mb-3">
               <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
                 {{ story.category }}
@@ -131,7 +137,6 @@
               {{ story.context }}
             </p>
 
-        
             <button (click)="viewStory(story.id); $event.stopPropagation()" class="btn-tiyc-primary w-full text-tiyc-body">
               📖 Ver Cuento
             </button>
@@ -180,3 +185,6 @@
   </div>
 
 </div>
+
+<!-- Modal de imagen -->
+<app-image-modal></app-image-modal>
