@@ -16,14 +16,18 @@ export const appConfig: ApplicationConfig = {
  ]
 };
 
-// Función para detectar automáticamente la URL de la API
 function getApiBaseUrl(): string {
-  // Si estamos en producción, usar environment
+  console.log('🔍 Environment check:', {
+    production: environment.production,
+    apiUrl: environment.apiUrl
+  });
+  
   if (environment.production) {
+    console.log('✅ Using PRODUCTION URL:', environment.apiUrl);
     return environment.apiUrl;
   }
   
-  // Si estamos en desarrollo local, usar localhost
+  console.log('🛠️ Using DEVELOPMENT URL: http://localhost:5000/api');
   return 'http://localhost:5000/api';
 }
 
