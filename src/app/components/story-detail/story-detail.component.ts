@@ -8,6 +8,7 @@ import { PdfService, PDFValidationResponse } from '../../services/pdf.service';
 import { Story, Scenario, Image as StoryImage } from '../../models/story.model';
 import { ImageModalComponent } from '../shared/image-modal/image-modal.component';
 import { ImageModalService, ImageModalData } from '../../services/image-modal.service';
+import { APP_CONFIG } from '../../config/app.config';
 
 interface ValidationResult {
   valid: boolean;
@@ -694,7 +695,7 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
       return imageUrl;
     }
     
-    return `http://localhost:5000${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
+    return `${APP_CONFIG.API_BASE_URL}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`;
   }
 
   getValidationStatusClass(): string {

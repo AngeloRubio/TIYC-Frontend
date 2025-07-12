@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
       return 'Email o contraseña incorrectos';
     }
     if (error.status === 0) {
-      return 'No se puede conectar con el servidor. ¿Está corriendo en http://localhost:5000?';
+      return 'No se puede conectar con el servidor. Verifica la conexión.';
     }
     if (error.status >= 500) {
       return 'Error del servidor. Inténtalo más tarde.';

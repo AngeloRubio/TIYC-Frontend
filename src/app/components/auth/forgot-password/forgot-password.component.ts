@@ -77,7 +77,7 @@ export class ForgotPasswordComponent implements OnInit {
       },
       error: (error) => {
         console.error('💥 Error en request:', error);
-        this.errorMessage = 'Error de conexión. ¿Está corriendo el servidor en http://localhost:5000?';
+        this.errorMessage = 'Error de conexión. ¿Está corriendo el servidor?';
         this.isLoading = false;
       }
     });
