@@ -166,7 +166,7 @@ export class AuthService {
     if (error.status === 401) {
       errorMessage = 'Email o contraseña incorrectos';
     } else if (error.status === 0) {
-      errorMessage = 'No se puede conectar con el servidor. ¿Está corriendo en http://localhost:5000?';
+      errorMessage = 'No se puede conectar con el servidor. ¿Está corriendo el servidor?';
     }
 
     return of({
