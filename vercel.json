@@ -1,5 +1,7 @@
 {
-  "outputDirectory": "dist/story-illustration-frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/story-illustration-frontend/browser",
+  "framework": "angular",
   "rewrites": [
     {
       "source": "/(.*)",
