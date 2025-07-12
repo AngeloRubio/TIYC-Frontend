@@ -1,6 +1,7 @@
 export const APP_CONFIG = {
   // URLs de la API
-  API_BASE_URL: 'http://localhost:5000/api',
+  // API_BASE_URL: 'http://localhost:5000/api',
+  API_BASE_URL:'https://tiyc-backend-production.up.railway.app/api',
   
   ENDPOINTS: {
     // Autenticación
