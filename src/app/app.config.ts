@@ -16,35 +16,61 @@ export const appConfig: ApplicationConfig = {
  ]
 };
 
+// ========================================
+// CONFIGURACIÓN DE API - CAMBIAR SEGÚN NECESIDAD
+// ========================================
+
+// OPCIÓN 1: DESARROLLO LOCAL (descomenta para usar localhost)
+// function getApiBaseUrl(): string {
+//   return 'http://localhost:5000/api';
+// }
+
+// OPCIÓN 2: RAILWAY PRODUCCIÓN (actualmente activa)
 function getApiBaseUrl(): string {
- if (environment.production) {
-   console.log('🌐 MODO PRODUCCIÓN - Usando:', environment.apiUrl);
-   return environment.apiUrl;
- }
- console.log('🛠️ MODO DESARROLLO - Usando: http://localhost:5000/api');
- return 'http://localhost:5000/api';
+  return 'https://tiyc-backend-production.up.railway.app/api';
 }
 
+// OPCIÓN 3: AUTOMÁTICO BASADO EN ENVIRONMENT (para producción final)
+// function getApiBaseUrl(): string {
+//   console.log('🔍 Environment check:', {
+//     production: environment.production,
+//     apiUrl: environment.apiUrl
+//   });
+//   
+//   if (environment.production) {
+//     console.log('✅ Using PRODUCTION URL:', environment.apiUrl);
+//     return environment.apiUrl;
+//   }
+//   
+//   console.log('🛠️ Using DEVELOPMENT URL: http://localhost:5000/api');
+//   return 'http://localhost:5000/api';
+// }
+
 export const APP_CONFIG = {
+ // URLs de la API
  API_BASE_URL: getApiBaseUrl(),
  
+ // ALTERNATIVA DIRECTA (descomenta si getApiBaseUrl() no funciona)
+ // API_BASE_URL: 'https://tiyc-backend-production.up.railway.app/api',  // ← RAILWAY
+ // API_BASE_URL: 'http://localhost:5000/api',  // ← LOCAL
+
  ENDPOINTS: {
-   // Autenticación
+   //  Autenticación
    LOGIN: '/auth/login',
    PROFILE: '/auth/profile',
    
-   // Cuentos 
+   //  Cuentos 
    PREVIEW_STORY: '/preview-illustrated-story',          
    SAVE_STORY: '/save-previewed-story',                 
    GET_STORY: '/illustrated-stories',                    
    RECENT_STORIES: '/stories/recent',                   
    TEACHER_STORIES: '/stories/teacher',                  
    
-   // Imágenes 
+   //  Imágenes 
    REGENERATE_PREVIEW_IMAGE: '/regenerate-preview-image', 
    REGENERATE_IMAGE: '/regenerate-scenario-image',        
    
-   // Perfil y Configuración
+   //  Perfil y Configuración
    PROFILE_UPDATE: '/profile',
    PROFILE_PASSWORD: '/profile/password',
    PROFILE_STATS: '/profile/stats',
@@ -59,17 +85,20 @@ export const APP_CONFIG = {
  },
 
  APP_SETTINGS: {
+   // Generación de Cuentos
    DEFAULT_NUM_ILLUSTRATIONS: 6,                       
    MIN_NUM_ILLUSTRATIONS: 1,
    MAX_NUM_ILLUSTRATIONS: 8,
    DEFAULT_PEDAGOGICAL_APPROACH: 'traditional' as const,
    
+   // Validación de Contenido
    MIN_CONTEXT_LENGTH: 10,
    MAX_CONTEXT_LENGTH: 500,
    MIN_CATEGORY_LENGTH: 2,
    
+   // Configuración de Imágenes
    SUPPORTED_IMAGE_FORMATS: ['png', 'jpg', 'jpeg', 'webp'],
-   IMAGE_MAX_SIZE: 1024 * 1024 * 5,
+   IMAGE_MAX_SIZE: 1024 * 1024 * 5, // 5MB
    
    PREVIEW_TIMEOUT: 120000,         
    REGENERATION_TIMEOUT: 30000,    
