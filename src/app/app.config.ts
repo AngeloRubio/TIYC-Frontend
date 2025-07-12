@@ -16,25 +16,43 @@ export const appConfig: ApplicationConfig = {
  ]
 };
 
+// ========================================
+// CONFIGURACIÓN DE API - CAMBIAR SEGÚN NECESIDAD
+// ========================================
+
+// OPCIÓN 1: DESARROLLO LOCAL (descomenta para usar localhost)
+// function getApiBaseUrl(): string {
+//   return 'http://localhost:5000/api';
+// }
+
+// OPCIÓN 2: RAILWAY PRODUCCIÓN (actualmente activa)
 function getApiBaseUrl(): string {
-  console.log('🔍 Environment check:', {
-    production: environment.production,
-    apiUrl: environment.apiUrl
-  });
-  
-  if (environment.production) {
-    console.log('✅ Using PRODUCTION URL:', environment.apiUrl);
-    return environment.apiUrl;
-  }
-  
-  console.log('🛠️ Using DEVELOPMENT URL: http://localhost:5000/api');
-  return 'http://localhost:5000/api';
+  return 'https://tiyc-backend-production.up.railway.app/api';
 }
 
+// OPCIÓN 3: AUTOMÁTICO BASADO EN ENVIRONMENT (para producción final)
+// function getApiBaseUrl(): string {
+//   console.log('🔍 Environment check:', {
+//     production: environment.production,
+//     apiUrl: environment.apiUrl
+//   });
+//   
+//   if (environment.production) {
+//     console.log('✅ Using PRODUCTION URL:', environment.apiUrl);
+//     return environment.apiUrl;
+//   }
+//   
+//   console.log('🛠️ Using DEVELOPMENT URL: http://localhost:5000/api');
+//   return 'http://localhost:5000/api';
+// }
+
 export const APP_CONFIG = {
- // URLs de la API - DETECTA AUTOMÁTICAMENTE
- //API_BASE_URL: getApiBaseUrl(),
- API_BASE_URL: 'https://tiyc-backend-production.up.railway.app/api',
+ // URLs de la API
+ API_BASE_URL: getApiBaseUrl(),
+ 
+ // ALTERNATIVA DIRECTA (descomenta si getApiBaseUrl() no funciona)
+ // API_BASE_URL: 'https://tiyc-backend-production.up.railway.app/api',  // ← RAILWAY
+ // API_BASE_URL: 'http://localhost:5000/api',  // ← LOCAL
 
  ENDPOINTS: {
    //  Autenticación
@@ -180,7 +198,7 @@ export const APP_CONFIG = {
  },
 
  ENVIRONMENT: {
-   PRODUCTION: environment.production,  // ← TAMBIÉN DINÁMICO
+   PRODUCTION: environment.production,
    DEVELOPMENT: !environment.production,
    STAGING: false,
 
@@ -194,7 +212,7 @@ export const APP_CONFIG = {
    },
    
    DEBUG: {
-     LOG_API_CALLS: !environment.production,  // ← SOLO EN DEV
+     LOG_API_CALLS: !environment.production,
      LOG_STATE_CHANGES: !environment.production,
      LOG_PERFORMANCE: true,
      VERBOSE_ERRORS: !environment.production,
@@ -202,7 +220,6 @@ export const APP_CONFIG = {
  },
 };
 
-// Resto de tipos y funciones igual...
 export type PedagogicalApproach = typeof APP_CONFIG.APP_SETTINGS.DEFAULT_PEDAGOGICAL_APPROACH;
 export type LoadingMessage = typeof APP_CONFIG.LOADING_MESSAGES[0];
 export type OperationMessage = typeof APP_CONFIG.OPERATION_MESSAGES.REGENERATING[0];
