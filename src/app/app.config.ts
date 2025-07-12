@@ -5,25 +5,31 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
  providers: [
    provideRouter(routes), 
    provideClientHydration(),
-   
-   // HTTP Client para llamadas a la API
    provideHttpClient(withFetch()),
-   
-   // Animaciones para transiciones suaves
    importProvidersFrom(BrowserAnimationsModule),
  ]
 };
 
+// Función para detectar automáticamente la URL de la API
+function getApiBaseUrl(): string {
+  // Si estamos en producción, usar environment
+  if (environment.production) {
+    return environment.apiUrl;
+  }
+  
+  // Si estamos en desarrollo local, usar localhost
+  return 'http://localhost:5000/api';
+}
 
 export const APP_CONFIG = {
- // URLs de la API
- API_BASE_URL: 'http://localhost:5000/api',
- 
+ // URLs de la API - DETECTA AUTOMÁTICAMENTE
+ API_BASE_URL: getApiBaseUrl(),
 
  ENDPOINTS: {
    //  Autenticación
@@ -71,16 +77,13 @@ export const APP_CONFIG = {
    SUPPORTED_IMAGE_FORMATS: ['png', 'jpg', 'jpeg', 'webp'],
    IMAGE_MAX_SIZE: 1024 * 1024 * 5, // 5MB
    
-  
    PREVIEW_TIMEOUT: 120000,         
    REGENERATION_TIMEOUT: 30000,    
    SAVE_TIMEOUT: 15000,             
    
-  
    MAX_CACHED_STORIES: 50,
    STORAGE_QUOTA_WARNING: 0.8,       
  },
- 
 
  AUTH_CONFIG: {
    TOKEN_KEY: 'tiyc_auth_token',
@@ -91,7 +94,6 @@ export const APP_CONFIG = {
    LOGOUT_REDIRECT: '/login',
    SESSION_CHECK_INTERVAL: 30000,    
  },
- 
 
  LOADING_MESSAGES: [
    { emoji: '🌟', text: 'Despertando la imaginación...', phase: 'init' },
@@ -101,7 +103,6 @@ export const APP_CONFIG = {
    { emoji: '✨', text: 'Añadiendo el toque final de magia...', phase: 'final' },
    { emoji: '🎉', text: '¡Tu cuento está casi listo!', phase: 'complete' },
  ],
- 
 
  OPERATION_MESSAGES: {
    REGENERATING: [
@@ -117,12 +118,10 @@ export const APP_CONFIG = {
  },
  
  UI_CONFIG: {
-   // Animaciones
    ANIMATION_DURATION: 300,
    SLOW_ANIMATION_DURATION: 600,
    FAST_ANIMATION_DURATION: 150,
    
-   // Feedback al Usuario
    TOAST_TIMEOUT: 5000,
    SUCCESS_TOAST_TIMEOUT: 3000,
    ERROR_TOAST_TIMEOUT: 8000,
@@ -139,27 +138,22 @@ export const APP_CONFIG = {
    TABLET_BREAKPOINT: 1024,
    DESKTOP_BREAKPOINT: 1280,
    
-   // Scroll y Navegación
    SMOOTH_SCROLL_DURATION: 500,
    INFINITE_SCROLL_THRESHOLD: 200,
  },
 
  MONITORING_CONFIG: {
-   // Performance Tracking
    TRACK_GENERATION_TIME: true,
    TRACK_USER_INTERACTIONS: true,
    TRACK_ERROR_RATES: true,
    
- 
    MEASURE_LOAD_TIMES: true,
    MEASURE_INTERACTION_DELAY: true,
    
-
    MAX_GENERATION_TIME: 180000,    
    MAX_ERROR_RATE: 0.05,            
    MAX_LOAD_TIME: 5000,           
  },
- 
 
  PWA_CONFIG: {
    ENABLE_OFFLINE_MODE: false,      
@@ -167,7 +161,6 @@ export const APP_CONFIG = {
    CACHE_IMAGES: false,              
    SYNC_WHEN_ONLINE: true,
  },
- 
 
  APP_INFO: {
    NAME: 'TIYC',
@@ -180,13 +173,11 @@ export const APP_CONFIG = {
    CONTACT: 'soporte@tiyc-santafe.edu.ec',
    REPOSITORY: 'https://github.com/tiyc-santa-fe/story-platform',
  },
- 
 
  ENVIRONMENT: {
-   PRODUCTION: false,
-   DEVELOPMENT: true,
+   PRODUCTION: environment.production,  // ← TAMBIÉN DINÁMICO
+   DEVELOPMENT: !environment.production,
    STAGING: false,
-   
 
    FEATURES: {
      ENABLE_PDF_EXPORT: true,       
@@ -197,62 +188,40 @@ export const APP_CONFIG = {
      ENABLE_IMAGE_REGENERATION: true, 
    },
    
-   // Configuraciones de Debug
    DEBUG: {
-     LOG_API_CALLS: true,
-     LOG_STATE_CHANGES: true,
+     LOG_API_CALLS: !environment.production,  // ← SOLO EN DEV
+     LOG_STATE_CHANGES: !environment.production,
      LOG_PERFORMANCE: true,
-     VERBOSE_ERRORS: true,
+     VERBOSE_ERRORS: !environment.production,
    }
  },
 };
 
-
+// Resto de tipos y funciones igual...
 export type PedagogicalApproach = typeof APP_CONFIG.APP_SETTINGS.DEFAULT_PEDAGOGICAL_APPROACH;
 export type LoadingMessage = typeof APP_CONFIG.LOADING_MESSAGES[0];
 export type OperationMessage = typeof APP_CONFIG.OPERATION_MESSAGES.REGENERATING[0];
-
-// Tipos para configuración
 export type EnvironmentFeature = keyof typeof APP_CONFIG.ENVIRONMENT.FEATURES;
 export type UIAnimationDuration = keyof Pick<typeof APP_CONFIG.UI_CONFIG, 'ANIMATION_DURATION' | 'SLOW_ANIMATION_DURATION' | 'FAST_ANIMATION_DURATION'>;
-
-// Tipos para endpoints
 export type APIEndpoint = keyof typeof APP_CONFIG.ENDPOINTS;
 export type HTTPTimeout = keyof Pick<typeof APP_CONFIG.APP_SETTINGS, 'PREVIEW_TIMEOUT' | 'REGENERATION_TIMEOUT' | 'SAVE_TIMEOUT'>;
 
-
-
-/**
-* Verifica si una feature está habilitada
-*/
 export function isFeatureEnabled(feature: EnvironmentFeature): boolean {
  return APP_CONFIG.ENVIRONMENT.FEATURES[feature];
 }
 
-/**
-* Obtiene la URL completa de un endpoint
-*/
 export function getEndpointUrl(endpoint: APIEndpoint): string {
  return `${APP_CONFIG.API_BASE_URL}${APP_CONFIG.ENDPOINTS[endpoint]}`;
 }
 
-/**
-* Verifica si estamos en modo de desarrollo
-*/
 export function isDevelopment(): boolean {
  return APP_CONFIG.ENVIRONMENT.DEVELOPMENT;
 }
 
-/**
-* Obtiene mensaje de loading por fase
-*/
 export function getLoadingMessageByPhase(phase: string): LoadingMessage | undefined {
  return APP_CONFIG.LOADING_MESSAGES.find(msg => msg.phase === phase);
 }
 
-/**
-* Obtiene timeout para una operación específica
-*/
 export function getTimeoutForOperation(operation: HTTPTimeout): number {
  return APP_CONFIG.APP_SETTINGS[operation];
 }
