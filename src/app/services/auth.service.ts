@@ -35,7 +35,7 @@ export class AuthService {
    */
   login(email: string, password: string): Observable<any> {
     const loginData = { email, password };
-    const url = `${APP_CONFIG.API_BASE_URL}${APP_CONFIG.ENDPOINTS.LOGIN}`;
+    const url = `https://tiyc-backend-production.up.railway.app/api/auth/login`;
 
     return this.http.post<any>(url, loginData).pipe(
       tap(response => {
