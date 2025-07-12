@@ -33,7 +33,8 @@ function getApiBaseUrl(): string {
 
 export const APP_CONFIG = {
  // URLs de la API - DETECTA AUTOMÁTICAMENTE
- API_BASE_URL: getApiBaseUrl(),
+ //API_BASE_URL: getApiBaseUrl(),
+ API_BASE_URL: 'https://tiyc-backend-production.up.railway.app/api',
 
  ENDPOINTS: {
    //  Autenticación
