@@ -47,6 +47,14 @@ export class RoleService {
   }
 
   /**
+   * Obtiene la ruta por defecto según el rol del usuario
+   */
+  getDefaultRouteForUser(): string {
+    const user = this.authService.getCurrentUserSync();
+    return user?.role === 'admin' ? '/admin' : '/biblioteca';
+  }
+
+  /**
    * Obtiene la etiqueta legible del rol
    */
   getRoleLabel(role: UserRole): string {

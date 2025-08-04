@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 
 import { AuthService } from '../../../services/auth.service';
+import { RoleService } from '../../../services/role.service';
 import { CopyrightFooterComponent } from '../../shared/copyright-footer/copyright-footer.component';
 import { APP_CONFIG } from '../../../config/app.config';
 
@@ -32,6 +33,7 @@ export class LoginComponent implements OnInit {
   
   constructor(
     private readonly authService: AuthService,
+    private readonly roleService: RoleService,
     private readonly router: Router,
     private readonly route: ActivatedRoute
   ) {}
@@ -66,7 +68,13 @@ export class LoginComponent implements OnInit {
 
   private handleLoginResponse(response: any): void {
     if (response.success) {
-      this.router.navigateByUrl(this.returnUrl);
+      // Si hay returnUrl, usarla; sino usar ruta por defecto según rol
+      if (this.returnUrl !== APP_CONFIG.AUTH_CONFIG.LOGIN_REDIRECT) {
+        this.router.navigateByUrl(this.returnUrl);
+      } else {
+        const defaultRoute = this.roleService.getDefaultRouteForUser();
+        this.router.navigateByUrl(defaultRoute);
+      }
     } else {
       this.errorMessage = response.error || 'Error de autenticación';
     }

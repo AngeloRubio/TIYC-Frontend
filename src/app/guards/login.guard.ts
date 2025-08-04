@@ -3,6 +3,7 @@ import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { Observable, map, take } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
+import { RoleService } from '../services/role.service';
 import { APP_CONFIG } from '../config/app.config';
 
 @Injectable({
@@ -11,12 +12,13 @@ import { APP_CONFIG } from '../config/app.config';
 export class LoginGuard implements CanActivate {
   
   private readonly authService = inject(AuthService);
+  private readonly roleService = inject(RoleService);
   private readonly router = inject(Router);
 
   /**
    * Guard que evita que usuarios autenticados accedan al login
    * 
-   * Si el usuario ya está autenticado, lo redirige a la biblioteca
+   * Si el usuario ya está autenticado, lo redirige a su ruta por defecto según rol
    * Si no está autenticado, le permite acceder al login
    * 
    * @param route - Ruta activada  
@@ -39,7 +41,8 @@ export class LoginGuard implements CanActivate {
           if (returnUrl) {
             this.router.navigateByUrl(returnUrl);
           } else {
-            this.router.navigate([APP_CONFIG.AUTH_CONFIG.LOGIN_REDIRECT]);
+            const defaultRoute = this.roleService.getDefaultRouteForUser();
+            this.router.navigate([defaultRoute]);
           }
           
           return false;
@@ -53,13 +56,15 @@ export class LoginGuard implements CanActivate {
 
 export const loginGuardFn = () => {
   const authService = inject(AuthService);
+  const roleService = inject(RoleService);
   const router = inject(Router);
   
   return authService.isAuthenticated$.pipe(
     take(1),
     map(isAuthenticated => {
       if (isAuthenticated) {
-        router.navigate([APP_CONFIG.AUTH_CONFIG.LOGIN_REDIRECT]);
+        const defaultRoute = roleService.getDefaultRouteForUser();
+        router.navigate([defaultRoute]);
         return false;
       } else {
         return true;

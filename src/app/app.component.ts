@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { HeaderComponent } from './components/shared/header/header.component';
 import { CopyrightFooterComponent } from './components/shared/copyright-footer/copyright-footer.component';
 import { AuthService } from './services/auth.service';
+import { RoleService } from './services/role.service';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   constructor(
     private readonly authService: AuthService,
+    private readonly roleService: RoleService,
     private readonly router: Router
   ) {}
   
@@ -52,7 +54,8 @@ export class AppComponent implements OnInit, OnDestroy {
     if (!this.isAuthenticated && currentUrl !== '/login') {
       this.router.navigate(['/login']);
     } else if (this.isAuthenticated && currentUrl === '/login') {
-      this.router.navigate(['/biblioteca']);
+      const defaultRoute = this.roleService.getDefaultRouteForUser();
+      this.router.navigate([defaultRoute]);
     }
   }
 }
