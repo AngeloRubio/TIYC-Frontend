@@ -200,7 +200,7 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
      </div>
    </div>
  `,
- styles: [`
+  styles: [`
    .badge {
      @apply px-3 py-1 rounded-full text-sm font-medium;
    }
@@ -208,146 +208,146 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
 })
 export class UserManagementComponent implements OnInit, OnDestroy {
 
- isLoading = true;
- isDeleting = false;
- error: string | null = null;
- 
- allUsers: UserWithRole[] = [];
- filteredUsers: UserWithRole[] = [];
- 
- searchTerm = '';
- roleFilter: UserRole | '' = '';
- 
- userToDelete: UserWithRole | null = null;
- currentUserId = '';
- 
- private subscriptions = new Subscription();
+  isLoading = true;
+  isDeleting = false;
+  error: string | null = null;
 
- constructor(
-   private adminService: AdminService,
-   private roleService: RoleService
- ) {}
+  allUsers: UserWithRole[] = [];
+  filteredUsers: UserWithRole[] = [];
 
- ngOnInit(): void {
-   this.loadUsers();
-   this.getCurrentUserId();
- }
+  searchTerm = '';
+  roleFilter: UserRole | '' = '';
 
- ngOnDestroy(): void {
-   this.subscriptions.unsubscribe();
- }
+  userToDelete: UserWithRole | null = null;
+  currentUserId = '';
 
- private getCurrentUserId(): void {
-   // Obtener ID del usuario actual desde AuthService
-   const token = localStorage.getItem('auth_token');
-   if (token) {
-     try {
-       const payload = JSON.parse(atob(token.split('.')[1]));
-       this.currentUserId = payload.teacher_id || '';
-     } catch (error) {
-       console.error('Error al obtener user ID:', error);
-     }
-   }
- }
+  private subscriptions = new Subscription();
 
- private loadUsers(): void {
-   this.isLoading = true;
-   this.error = null;
-   
-   const sub = this.adminService.getAllUsers().subscribe({
-     next: (response) => {
-       if (response.success && response.users) {
-         this.allUsers = response.users;
-         this.applyFilters();
-       } else {
-         this.error = response.error || 'Error al cargar usuarios';
-       }
-       this.isLoading = false;
-     },
-     error: (error) => {
-       console.error('Error al cargar usuarios:', error);
-       this.error = 'Error de conexión';
-       this.isLoading = false;
-     }
-   });
-   
-   this.subscriptions.add(sub);
- }
+  constructor(
+    private adminService: AdminService,
+    private roleService: RoleService
+  ) { }
 
- applyFilters(): void {
-   let filtered = [...this.allUsers];
-   
-   // Filtro por búsqueda
-   if (this.searchTerm.trim()) {
-     const term = this.searchTerm.toLowerCase();
-     filtered = filtered.filter(user => 
-       user.username.toLowerCase().includes(term) ||
-       user.email.toLowerCase().includes(term)
-     );
-   }
-   
-   // Filtro por rol
-   if (this.roleFilter) {
-     filtered = filtered.filter(user => user.role === this.roleFilter);
-   }
-   
-   this.filteredUsers = filtered;
- }
+  ngOnInit(): void {
+    this.loadUsers();
+    this.getCurrentUserId();
+  }
 
- editUser(user: UserWithRole): void {
-   // TODO: Implementar modal de edición o navegar a página de edición
-   console.log('Editar usuario:', user);
- }
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
- deleteUser(user: UserWithRole): void {
-   this.userToDelete = user;
- }
+  private getCurrentUserId(): void {
+    // Obtener ID del usuario actual desde AuthService
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        this.currentUserId = payload.teacher_id || '';
+      } catch (error) {
+        console.error('Error al obtener user ID:', error);
+      }
+    }
+  }
 
- confirmDelete(): void {
-   if (!this.userToDelete) return;
-   
-   this.isDeleting = true;
-   
-   const sub = this.adminService.deleteUser(this.userToDelete.id).subscribe({
-     next: (response) => {
-       if (response.success) {
-         // Remover usuario de la lista
-         this.allUsers = this.allUsers.filter(u => u.id !== this.userToDelete!.id);
-         this.applyFilters();
-         this.userToDelete = null;
-       } else {
-         this.error = response.error || 'Error al eliminar usuario';
-       }
-       this.isDeleting = false;
-     },
-     error: (error) => {
-       console.error('Error al eliminar usuario:', error);
-       this.error = 'Error de conexión';
-       this.isDeleting = false;
-     }
-   });
-   
-   this.subscriptions.add(sub);
- }
+  loadUsers(): void {
+    this.isLoading = true;
+    this.error = null;
 
- cancelDelete(): void {
-   this.userToDelete = null;
- }
+    const sub = this.adminService.getAllUsers().subscribe({
+      next: (response) => {
+        if (response.success && response.users) {
+          this.allUsers = response.users;
+          this.applyFilters();
+        } else {
+          this.error = response.error || 'Error al cargar usuarios';
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar usuarios:', error);
+        this.error = 'Error de conexión';
+        this.isLoading = false;
+      }
+    });
 
- getRoleLabel(role: UserRole): string {
-   return this.roleService.getRoleLabel(role);
- }
+    this.subscriptions.add(sub);
+  }
 
- getRoleBadgeClass(role: UserRole): string {
-   return `badge ${this.roleService.getRoleBadgeClass(role)}`;
- }
+  applyFilters(): void {
+    let filtered = [...this.allUsers];
 
- formatDate(dateString: string): string {
-   const date = new Date(dateString);
-   return date.toLocaleDateString('es-ES', {
-     year: 'numeric',
-     month: 'short',
-     day: 'numeric'
-   });
- }
+    // Filtro por búsqueda
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(user =>
+        user.username.toLowerCase().includes(term) ||
+        user.email.toLowerCase().includes(term)
+      );
+    }
+
+    // Filtro por rol
+    if (this.roleFilter) {
+      filtered = filtered.filter(user => user.role === this.roleFilter);
+    }
+
+    this.filteredUsers = filtered;
+  }
+
+  editUser(user: UserWithRole): void {
+    // TODO: Implementar modal de edición o navegar a página de edición
+    console.log('Editar usuario:', user);
+  }
+
+  deleteUser(user: UserWithRole): void {
+    this.userToDelete = user;
+  }
+
+  confirmDelete(): void {
+    if (!this.userToDelete) return;
+
+    this.isDeleting = true;
+
+    const sub = this.adminService.deleteUser(this.userToDelete.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Remover usuario de la lista
+          this.allUsers = this.allUsers.filter(u => u.id !== this.userToDelete!.id);
+          this.applyFilters();
+          this.userToDelete = null;
+        } else {
+          this.error = response.error || 'Error al eliminar usuario';
+        }
+        this.isDeleting = false;
+      },
+      error: (error) => {
+        console.error('Error al eliminar usuario:', error);
+        this.error = 'Error de conexión';
+        this.isDeleting = false;
+      }
+    });
+
+    this.subscriptions.add(sub);
+  }
+
+  cancelDelete(): void {
+    this.userToDelete = null;
+  }
+
+  getRoleLabel(role: UserRole): string {
+    return this.roleService.getRoleLabel(role);
+  }
+
+  getRoleBadgeClass(role: UserRole): string {
+    return `badge ${this.roleService.getRoleBadgeClass(role)}`;
+  }
+
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
 }
