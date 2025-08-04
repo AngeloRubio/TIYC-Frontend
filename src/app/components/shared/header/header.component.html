@@ -1,74 +1,79 @@
 <header class="header-tiyc shadow-lg relative z-50">
-  <div class="flex items-center justify-between w-full">
+ <div class="flex items-center justify-between w-full">
 
-    <!-- Logo TIYC - Lado izquierdo -->
-    <div class="logo-tiyc cursor-pointer flex items-center" (click)="goToLibrary()">
-      <img src="assets/images/logo proyecto png.PNG" alt="TIYC Logo" class="h-10 w-auto object-contain"
-        onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-      <!-- Fallback text si la imagen no carga -->
-      <span class="hidden text-tiyc-heading">TIYC</span>
-    </div>
+   <!-- Logo TIYC - Lado izquierdo -->
+   <div class="logo-tiyc cursor-pointer flex items-center" (click)="goToLibrary()">
+     <img src="assets/images/logo proyecto png.PNG" alt="TIYC Logo" class="h-10 w-auto object-contain"
+       onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+     <!-- Fallback text si la imagen no carga -->
+     <span class="hidden text-tiyc-heading">TIYC</span>
+   </div>
 
-    <!-- CONTENIDO DEL LADO DERECHO -->
-    <div class="flex items-center space-x-4">
+   <!-- CONTENIDO DEL LADO DERECHO -->
+   <div class="flex items-center space-x-4">
 
-      <!-- Mi Biblioteca (desktop) -->
-      <nav class="hidden md:flex items-center">
-        <button type="button" class="nav-link text-tiyc-body" (click)="goToLibrary()"
-          [class.active]="router.url === '/biblioteca'">
-          📚 Mi biblioteca
-        </button>
-      </nav>
+     <!-- Mi Biblioteca (desktop) -->
+     <nav class="hidden md:flex items-center">
+       <button type="button" class="nav-link text-tiyc-body" (click)="goToLibrary()"
+         [class.active]="router.url === '/biblioteca'">
+         📚 Mi biblioteca
+       </button>
+     </nav>
 
-      <!-- Información del usuario (visible en pantallas grandes) -->
-      <div class="hidden lg:flex flex-col text-right text-white text-tiyc-small" *ngIf="currentUser">
-        <span class="font-semibold text-tiyc-body">{{ getUserDisplayName() }}</span>
-        <span class="opacity-75 text-tiyc-small">{{ getUserEmail() }}</span>
-      </div>
+     <!-- Información del usuario (visible en pantallas grandes) -->
+     <div class="hidden lg:flex flex-col text-right text-white text-tiyc-small" *ngIf="currentUser">
+       <span class="font-semibold text-tiyc-body">{{ getUserDisplayName() }}</span>
+       <span class="opacity-75 text-tiyc-small">{{ getUserEmail() }}</span>
+     </div>
 
-      <!-- Menú de usuario con dropdown -->
-      <div class="relative user-menu">
-        <button type="button" class="user-menu-btn text-tiyc-body" (click)="toggleUserMenu()"
-          [class.active]="isUserMenuOpen" title="Menú de usuario">
-          🧑‍💻 Menú
-          <span class="ml-1 transition-transform duration-200" [class.rotate-180]="isUserMenuOpen">
-            ▼
-          </span>
-        </button>
+     <!-- Menú de usuario con dropdown -->
+     <div class="relative user-menu">
+       <button type="button" class="user-menu-btn text-tiyc-body" (click)="toggleUserMenu()"
+         [class.active]="isUserMenuOpen" title="Menú de usuario">
+         🧑‍💻 Menú
+         <span class="ml-1 transition-transform duration-200" [class.rotate-180]="isUserMenuOpen">
+           ▼
+         </span>
+       </button>
 
-        <!-- Dropdown del menú de usuario -->
-        <div class="user-dropdown" [class.show]="isUserMenuOpen" [@slideDown]="getDropdownAnimationState()">
-          <!-- Información del usuario en móvil -->
-          <div class="lg:hidden px-4 py-3 border-b border-gray-100 bg-gray-50" *ngIf="currentUser">
-            <div class="font-semibold text-tiyc-brown text-tiyc-body">{{ getUserDisplayName() }}</div>
-            <div class="text-gray-600 text-tiyc-small">{{ getUserEmail() }}</div>
-          </div>
+       <!-- Dropdown del menú de usuario -->
+       <div class="user-dropdown" [class.show]="isUserMenuOpen" [@slideDown]="getDropdownAnimationState()">
+         <!-- Información del usuario en móvil -->
+         <div class="lg:hidden px-4 py-3 border-b border-gray-100 bg-gray-50" *ngIf="currentUser">
+           <div class="font-semibold text-tiyc-brown text-tiyc-body">{{ getUserDisplayName() }}</div>
+           <div class="text-gray-600 text-tiyc-small">{{ getUserEmail() }}</div>
+         </div>
 
-          <!-- Mi Biblioteca en móvil (NUEVO) -->
-          <div class="md:hidden">
-            <button type="button" class="dropdown-item text-tiyc-body" (click)="goToLibrary()"
-              [class.bg-gray-100]="router.url === '/biblioteca'">
-              📚 Mi biblioteca
-            </button>
-            <div class="border-t border-gray-100 my-1"></div>
-          </div>
+         <!-- Mi Biblioteca en móvil (NUEVO) -->
+         <div class="md:hidden">
+           <button type="button" class="dropdown-item text-tiyc-body" (click)="goToLibrary()"
+             [class.bg-gray-100]="router.url === '/biblioteca'">
+             📚 Mi biblioteca
+           </button>
+           <div class="border-t border-gray-100 my-1"></div>
+         </div>
 
-          <!-- Opciones del menú -->
-          <div class="py-2">
-            <button type="button" class="dropdown-item text-tiyc-body" (click)="goToConfig()">
-              ⚙️ Configuración
-            </button>
+         <!-- Opciones del menú -->
+         <div class="py-2">
+           <!-- Administración - Solo para admins -->
+           <button *ngIf="isAdmin()" type="button" class="dropdown-item text-tiyc-body" (click)="goToAdmin()">
+             👥 Administración
+           </button>
+           
+           <button type="button" class="dropdown-item text-tiyc-body" (click)="goToConfig()">
+             ⚙️ Configuración
+           </button>
 
-            <div class="border-t border-gray-100 my-1"></div>
+           <div class="border-t border-gray-100 my-1"></div>
 
-            <button type="button" class="dropdown-item text-red-600 hover:bg-red-50 text-tiyc-body" (click)="logout()">
-              🚪 Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+           <button type="button" class="dropdown-item text-red-600 hover:bg-red-50 text-tiyc-body" (click)="logout()">
+             🚪 Cerrar Sesión
+           </button>
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
 </header>
 
 
