@@ -24,13 +24,10 @@ export class adminGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     
-    console.log('🛡️ AdminGuard: Verificando acceso admin a:', state.url);
-
     return this.authService.isAuthenticated$.pipe(
       take(1),
       map(isAuthenticated => {
         if (!isAuthenticated) {
-          console.log('❌ AdminGuard: Usuario no autenticado');
           this.router.navigate(['/login']);
           return false;
         }
@@ -38,19 +35,16 @@ export class adminGuard implements CanActivate {
         const isAdmin = this.roleService.isCurrentUserAdmin();
         
         if (!isAdmin) {
-          console.log('❌ AdminGuard: Usuario no es administrador');
           this.router.navigate(['/biblioteca']);
           return false;
         }
 
-        console.log('✅ AdminGuard: Acceso admin permitido');
         return true;
       })
     );
   }
 }
 
-// Función guard funcional
 export const adminGuardFn = () => {
   const roleService = inject(RoleService);
   const authService = inject(AuthService);

@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 
 import { AdminService } from '../../../services/admin.service';
 import { RoleService } from '../../../services/role.service';
-import { UserWithRole, UserRole } from '../../../models/story.model';
+import { UserWithRole, UserRole, UpdateUserRequest } from '../../../models/story.model';
 
 @Component({
   selector: 'app-user-management',
@@ -75,9 +75,11 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grado</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Escuela</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Registro</th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
@@ -86,21 +88,30 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
                 <!-- User Info -->
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="w-10 h-10 bg-tiyc-primary rounded-full flex items-center justify-center text-white font-semibold mr-3">
-                      {{ user.username.charAt(0).toUpperCase() }}
+                    <div class="h-10 w-10 rounded-full bg-tiyc-primary bg-opacity-10 flex items-center justify-center">
+                      <span class="text-tiyc-primary font-semibold">{{ user.username.charAt(0).toUpperCase() }}</span>
                     </div>
-                    <div>
+                    <div class="ml-4">
                       <div class="text-sm font-medium text-gray-900">{{ user.username }}</div>
-                      <div class="text-sm text-gray-500">{{ user.email }}</div>
                     </div>
                   </div>
                 </td>
                 
+                <!-- Email -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ user.email }}
+                </td>
+                
                 <!-- Role -->
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span [class]="getRoleBadgeClass(user.role)">
+                  <span [ngClass]="getRoleBadgeClass(user.role)">
                     {{ getRoleLabel(user.role) }}
                   </span>
+                </td>
+                
+                <!-- Grade -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{ user.grade || 'No especificado' }}
                 </td>
                 
                 <!-- School -->
@@ -158,6 +169,108 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
       </div>
     </div>
 
+    <!-- Edit User Modal -->
+    <div *ngIf="isEditModalOpen" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" (click)="cancelEdit()">
+          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+          <form (ngSubmit)="saveUser()" #editForm="ngForm">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+              <div class="flex items-start mb-4">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <span class="text-blue-600">✏️</span>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900">Editar Usuario</h3>
+                  <p class="text-sm text-gray-500">Modifica la información del usuario</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Username -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de Usuario *</label>
+                  <input 
+                    type="text"
+                    [(ngModel)]="editUserData.username"
+                    name="username"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiyc-primary"
+                    placeholder="Nombre completo">
+                </div>
+
+                <!-- Email -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <input 
+                    type="email"
+                    [(ngModel)]="editUserData.email"
+                    name="email"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiyc-primary"
+                    placeholder="email@ejemplo.com">
+                </div>
+
+                <!-- Role -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Rol *</label>
+                  <select 
+                    [(ngModel)]="editUserData.role"
+                    name="role"
+                    required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiyc-primary">
+                    <option value="teacher">Profesor</option>
+                    <option value="admin">Administrador</option>
+                  </select>
+                </div>
+
+                <!-- School -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Escuela</label>
+                  <input 
+                    type="text"
+                    [(ngModel)]="editUserData.school"
+                    name="school"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiyc-primary"
+                    placeholder="Nombre de la escuela">
+                </div>
+
+                <!-- Grade -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Grado</label>
+                  <input 
+                    type="text"
+                    [(ngModel)]="editUserData.grade"
+                    name="grade"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-tiyc-primary"
+                    placeholder="Ej: 5to Primaria">
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <button 
+                type="submit"
+                [disabled]="isUpdating || !editForm.form.valid"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-tiyc-primary text-base font-medium text-white hover:bg-tiyc-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-tiyc-primary sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                {{ isUpdating ? 'Guardando...' : 'Guardar Cambios' }}
+              </button>
+              <button 
+                type="button"
+                (click)="cancelEdit()"
+                [disabled]="isUpdating"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Delete Confirmation Modal -->
     <div *ngIf="userToDelete" class="fixed inset-0 z-50 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -188,28 +301,29 @@ import { UserWithRole, UserRole } from '../../../models/story.model';
               [disabled]="isDeleting"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               {{ isDeleting ? 'Eliminando...' : 'Eliminar' }}
-           </button>
-           <button 
-             (click)="cancelDelete()"
-             [disabled]="isDeleting"
-             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
-             Cancelar
-           </button>
-         </div>
-       </div>
-     </div>
-   </div>
- `,
+            </button>
+            <button 
+              (click)="cancelDelete()"
+              [disabled]="isDeleting"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
   styles: [`
-   .badge {
-     @apply px-3 py-1 rounded-full text-sm font-medium;
-   }
- `]
+    .badge {
+      @apply px-3 py-1 rounded-full text-sm font-medium;
+    }
+  `]
 })
 export class UserManagementComponent implements OnInit, OnDestroy {
 
   isLoading = true;
   isDeleting = false;
+  isUpdating = false;
   error: string | null = null;
 
   allUsers: UserWithRole[] = [];
@@ -220,6 +334,17 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
   userToDelete: UserWithRole | null = null;
   currentUserId = '';
+
+  // Edit Modal
+  isEditModalOpen = false;
+  userToEdit: UserWithRole | null = null;
+  editUserData: UpdateUserRequest = {
+    username: '',
+    email: '',
+    role: 'teacher',
+    school: '',
+    grade: ''
+  };
 
   private subscriptions = new Subscription();
 
@@ -238,8 +363,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   private getCurrentUserId(): void {
-    // Obtener ID del usuario actual desde AuthService
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('tiyc_auth_token');
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
@@ -277,7 +401,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     let filtered = [...this.allUsers];
 
-    // Filtro por búsqueda
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(user =>
@@ -286,7 +409,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
       );
     }
 
-    // Filtro por rol
     if (this.roleFilter) {
       filtered = filtered.filter(user => user.role === this.roleFilter);
     }
@@ -295,8 +417,57 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   }
 
   editUser(user: UserWithRole): void {
-    // TODO: Implementar modal de edición o navegar a página de edición
-    console.log('Editar usuario:', user);
+    this.userToEdit = user;
+    this.editUserData = {
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      school: user.school || '',
+      grade: user.grade || ''
+    };
+    this.isEditModalOpen = true;
+  }
+
+  saveUser(): void {
+    if (!this.userToEdit) return;
+
+    this.isUpdating = true;
+
+    const sub = this.adminService.updateUser(this.userToEdit.id, this.editUserData).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Actualizar usuario en la lista
+          const index = this.allUsers.findIndex(u => u.id === this.userToEdit!.id);
+          if (index !== -1) {
+            this.allUsers[index] = { ...this.allUsers[index], ...this.editUserData };
+            this.applyFilters();
+          }
+          this.cancelEdit();
+        } else {
+          this.error = response.error || 'Error al actualizar usuario';
+        }
+        this.isUpdating = false;
+      },
+      error: (error) => {
+        console.error('Error al actualizar usuario:', error);
+        this.error = 'Error de conexión';
+        this.isUpdating = false;
+      }
+    });
+
+    this.subscriptions.add(sub);
+  }
+
+  cancelEdit(): void {
+    this.isEditModalOpen = false;
+    this.userToEdit = null;
+    this.editUserData = {
+      username: '',
+      email: '',
+      role: 'teacher',
+      school: '',
+      grade: ''
+    };
   }
 
   deleteUser(user: UserWithRole): void {
@@ -311,7 +482,6 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     const sub = this.adminService.deleteUser(this.userToDelete.id).subscribe({
       next: (response) => {
         if (response.success) {
-          // Remover usuario de la lista
           this.allUsers = this.allUsers.filter(u => u.id !== this.userToDelete!.id);
           this.applyFilters();
           this.userToDelete = null;
