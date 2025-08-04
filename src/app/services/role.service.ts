@@ -43,10 +43,6 @@ export class RoleService {
    */
   isCurrentUserAdmin(): boolean {
     const user = this.authService.getCurrentUserSync();
-    console.log('🔍 RoleService - Usuario completo:', user);
-    console.log('🔍 RoleService - Rol del usuario:', user?.role);
-    console.log('🔍 RoleService - Es admin?:', user?.role === 'admin');
-    
     return user?.role === 'admin';
   }
 
@@ -61,9 +57,6 @@ export class RoleService {
     return labels[role] || 'Desconocido';
   }
 
-  /**
-   * Obtiene el color del badge según el rol
-   */
   getRoleBadgeClass(role: UserRole): string {
     const classes = {
       'admin': 'bg-red-100 text-red-800',

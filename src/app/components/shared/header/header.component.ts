@@ -36,24 +36,24 @@ import { Teacher } from '../../../models/story.model';
   ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  
+
   isUserMenuOpen = false;
   currentUser: Teacher | null = null;
   isAuthenticated = false;
-  
+
   private readonly subscriptions = new Subscription();
-  
+
   constructor(
     public readonly router: Router,
     private readonly authService: AuthService,
     private readonly roleService: RoleService,
     @Inject(PLATFORM_ID) private readonly platformId: Object
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     this.loadUserInfo();
   }
-  
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
@@ -65,7 +65,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.closeUserMenu();
     this.safeNavigate('/biblioteca');
   }
-  
+
   /**
    * Navega a la página de configuración
    */
@@ -81,7 +81,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.closeUserMenu();
     this.safeNavigate('/admin');
   }
-  
+
   /**
    * Maneja el logout del usuario
    */
@@ -96,7 +96,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleUserMenu(): void {
     this.isUserMenuOpen = !this.isUserMenuOpen;
   }
-  
+
   /**
    * Cierra el menú de usuario
    */
@@ -111,12 +111,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const user = this.currentUser;
     const roleServiceResult = this.roleService.isCurrentUserAdmin();
     const directCheck = user?.role === 'admin';
-    
-    console.log('🔍 Header - Usuario actual:', user);
-    console.log('🔍 Header - Role en usuario:', user?.role);
-    console.log('🔍 Header - RoleService result:', roleServiceResult);
-    console.log('🔍 Header - Direct check:', directCheck);
-    
     return directCheck;
   }
 
@@ -143,7 +137,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.currentUser) return 'Profesor';
     return this.currentUser.username || 'Usuario';
   }
-  
+
   /**
    * Obtener email del usuario
    */
@@ -151,7 +145,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.currentUser) return '';
     return this.currentUser.email || '';
   }
-  
+
   /**
    * Estado de la animación del dropdown
    */
@@ -219,9 +213,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         localStorage.removeItem('tiyc_auth_token');
         localStorage.removeItem('tiyc_user_data');
       } catch (e) {
-        // Silently handle localStorage errors
+
       }
-      
+
       window.location.href = '/login';
     }
   }
@@ -241,26 +235,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.isAuthenticated = isAuth;
           },
           error: (error) => {
-            // Handle error silently or with minimal logging
           }
         });
         this.subscriptions.add(authSub);
       }
-      
+
       if (this.authService.currentUser$) {
         const userSub = this.authService.currentUser$.subscribe({
           next: (user: Teacher | null) => {
             this.currentUser = user;
-            console.log('🔍 Header - Usuario actualizado:', user);
+
           },
           error: (error) => {
-            // Handle error silently or with minimal logging
           }
         });
         this.subscriptions.add(userSub);
       }
     } catch (error) {
-      // Handle initialization errors silently
+
     }
   }
 }
