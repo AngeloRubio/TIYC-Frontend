@@ -42,8 +42,12 @@ export class RoleService {
    * Verifica si el usuario actual es administrador (método síncrono)
    */
   isCurrentUserAdmin(): boolean {
-    const user = this.authService.getCurrentUser();
-    return user && 'role' in user ? user.role === 'admin' : false;
+    const user = this.authService.getCurrentUserSync();
+    console.log('🔍 RoleService - Usuario completo:', user);
+    console.log('🔍 RoleService - Rol del usuario:', user?.role);
+    console.log('🔍 RoleService - Es admin?:', user?.role === 'admin');
+    
+    return user?.role === 'admin';
   }
 
   /**

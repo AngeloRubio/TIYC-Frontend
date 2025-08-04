@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { AuthService } from '../../../services/auth.service';
-import { RoleService } from '../../../services/role.service';  // ✅ NUEVO IMPORT
+import { RoleService } from '../../../services/role.service';
 import { Teacher } from '../../../models/story.model';
 
 @Component({
@@ -46,7 +46,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public readonly router: Router,
     private readonly authService: AuthService,
-    private readonly roleService: RoleService,  // ✅ NUEVO SERVICIO
+    private readonly roleService: RoleService,
     @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
   
@@ -60,7 +60,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   /**
    * Navega a la página de biblioteca
-   * Mantiene compatibilidad con tu template original
    */
   goToLibrary(): void {
     this.closeUserMenu();
@@ -69,7 +68,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   
   /**
    * Navega a la página de configuración
-   * Mantiene compatibilidad con tu template original
    */
   goToConfig(): void {
     this.closeUserMenu();
@@ -77,7 +75,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Navega al panel de administración
+   * Navega al panel de administración
    */
   goToAdmin(): void {
     this.closeUserMenu();
@@ -86,7 +84,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   
   /**
    * Maneja el logout del usuario
-   * Mantiene compatibilidad con tu template original
    */
   logout(): void {
     this.closeUserMenu();
@@ -108,14 +105,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Verifica si el usuario es administrador
+   * Verifica si el usuario es administrador
    */
   isAdmin(): boolean {
-    return this.roleService.isCurrentUserAdmin();
+    const user = this.currentUser;
+    const roleServiceResult = this.roleService.isCurrentUserAdmin();
+    const directCheck = user?.role === 'admin';
+    
+    console.log('🔍 Header - Usuario actual:', user);
+    console.log('🔍 Header - Role en usuario:', user?.role);
+    console.log('🔍 Header - RoleService result:', roleServiceResult);
+    console.log('🔍 Header - Direct check:', directCheck);
+    
+    return directCheck;
   }
 
   /**
-   * ✅ NUEVO: Obtiene el rol del usuario para mostrar
+   * Obtiene el rol del usuario para mostrar
    */
   getUserRole(): string {
     if (!this.currentUser?.role) return '';
@@ -123,7 +129,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * ✅ NUEVO: Obtiene la clase CSS para el badge del rol
+   * Obtiene la clase CSS para el badge del rol
    */
   getUserRoleBadgeClass(): string {
     if (!this.currentUser?.role) return 'bg-gray-100 text-gray-800';
@@ -245,6 +251,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         const userSub = this.authService.currentUser$.subscribe({
           next: (user: Teacher | null) => {
             this.currentUser = user;
+            console.log('🔍 Header - Usuario actualizado:', user);
           },
           error: (error) => {
             // Handle error silently or with minimal logging

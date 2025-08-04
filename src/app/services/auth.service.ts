@@ -70,10 +70,12 @@ getCurrentUser(): Observable<Teacher | null> {
 }
 
 /**
- * ✅ NUEVO: Obtiene el usuario actual de forma síncrona
+ * Obtiene el usuario actual de forma síncrona
  */
 getCurrentUserSync(): Teacher | null {
-  return this.currentUserSubject.value;
+  const user = this.currentUserSubject.value;
+  console.log('🔍 AuthService.getCurrentUserSync():', user);
+  return user;
 }
 
 /**
