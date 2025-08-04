@@ -48,20 +48,25 @@ export const routes: Routes = [
 },
 
 // 👥 Rutas ADMIN - Solo para administradores
-{
-  path: 'admin',
-  loadComponent: () => import('./components/admin/admin-dashboard/admin-dashboard.component').then(c => c.AdminDashboardComponent),
-  canActivate: [authGuard, adminGuard] // ✅ Requiere autenticación + rol admin
-},
-{
-  path: 'admin/usuarios',
-  loadComponent: () => import('./components/admin/user-management/user-management.component').then(c => c.UserManagementComponent),
-  canActivate: [authGuard, adminGuard] // ✅ Requiere autenticación + rol admin
-},
+  {
+    path: 'admin',
+    loadComponent: () => import('./components/admin/admin-dashboard/admin-dashboard.component').then(c => c.AdminDashboardComponent),
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'admin/usuarios',
+    loadComponent: () => import('./components/admin/user-management/user-management.component').then(c => c.UserManagementComponent),
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'admin/crear-usuario',
+    loadComponent: () => import('./components/admin/create-user/create-user.component').then(c => c.CreateUserComponent),
+    canActivate: [authGuard, adminGuard]
+  },
 
-// Ruta de fallback - redirigir a biblioteca (también protegida)
-{
-  path: '**',
-  redirectTo: '/biblioteca'
-}
+  // Ruta de fallback
+  {
+    path: '**',
+    redirectTo: '/biblioteca'
+  }
 ];

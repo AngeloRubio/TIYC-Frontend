@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 import { AuthService } from '../../../services/auth.service';
+import { RoleService } from '../../../services/role.service';  // ✅ NUEVO IMPORT
 import { Teacher } from '../../../models/story.model';
 
 @Component({
@@ -45,6 +46,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     public readonly router: Router,
     private readonly authService: AuthService,
+    private readonly roleService: RoleService,  // ✅ NUEVO SERVICIO
     @Inject(PLATFORM_ID) private readonly platformId: Object
   ) {}
   
@@ -73,6 +75,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.closeUserMenu();
     this.safeNavigate('/configuracion');
   }
+
+  /**
+   * ✅ NUEVO: Navega al panel de administración
+   */
+  goToAdmin(): void {
+    this.closeUserMenu();
+    this.safeNavigate('/admin');
+  }
   
   /**
    * Maneja el logout del usuario
@@ -95,6 +105,29 @@ export class HeaderComponent implements OnInit, OnDestroy {
    */
   closeUserMenu(): void {
     this.isUserMenuOpen = false;
+  }
+
+  /**
+   * ✅ NUEVO: Verifica si el usuario es administrador
+   */
+  isAdmin(): boolean {
+    return this.roleService.isCurrentUserAdmin();
+  }
+
+  /**
+   * ✅ NUEVO: Obtiene el rol del usuario para mostrar
+   */
+  getUserRole(): string {
+    if (!this.currentUser?.role) return '';
+    return this.roleService.getRoleLabel(this.currentUser.role);
+  }
+
+  /**
+   * ✅ NUEVO: Obtiene la clase CSS para el badge del rol
+   */
+  getUserRoleBadgeClass(): string {
+    if (!this.currentUser?.role) return 'bg-gray-100 text-gray-800';
+    return this.roleService.getRoleBadgeClass(this.currentUser.role);
   }
 
   /**
