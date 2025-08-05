@@ -438,23 +438,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  getPedagogicalIcon(): string {
-    if (!this.story?.pedagogical_approach) return '📚';
-    
-    const approach = this.story.pedagogical_approach.toLowerCase();
-    
-    switch (approach) {
-      case 'montessori':
-        return '🔬';
-      case 'waldorf':
-        return '🎨';
-      case 'traditional':
-        return '💫';
-      default:
-        return '📚';
-    }
-  }
-
   getPedagogicalColor(): string {
     if (!this.story?.pedagogical_approach) return 'from-blue-50 to-indigo-50';
     
@@ -626,20 +609,6 @@ export class StoryDetailComponent implements OnInit, OnDestroy {
 
   private showErrorMessage(message: string): void {
     alert(message);
-  }
-
-  getCategoryEmoji(category: string): string {
-    const emojis: { [key: string]: string } = {
-      'aventura': '🗺️',
-      'fantasia': '🦄',
-      'ciencia': '🔬',
-      'naturaleza': '🌿',
-      'amistad': '👫',
-      'familia': '👨‍👩‍👧‍👦',
-      'valores': '⭐',
-      'educativo': '📚'
-    };
-    return emojis[category.toLowerCase()] || '📖';
   }
 
   getPedagogicalApproachLabel(approach?: string): string {

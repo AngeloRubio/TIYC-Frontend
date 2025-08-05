@@ -88,16 +88,19 @@
           class="card-tiyc overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300"
           (click)="viewStory(story.id)">
 
-          <!-- Imagen/Icono del cuento -->
-          <div class="h-48 bg-gradient-to-br flex items-center justify-center text-4xl relative group" [ngClass]="{
-                 'from-blue-200 to-purple-200': i % 6 === 0,
-                 'from-yellow-200 to-pink-200': i % 6 === 1,
-                 'from-green-200 to-blue-200': i % 6 === 2,
-                 'from-red-200 to-orange-200': i % 6 === 3,
-                 'from-purple-200 to-indigo-200': i % 6 === 4,
-                 'from-teal-200 to-cyan-200': i % 6 === 5
-               }">
-            {{ getCategoryEmoji(story.category) }}
+          <!-- ✨ IMAGEN DE METODOLOGÍA PEDAGÓGICA (NUEVO) -->
+          <div class="h-48 relative group overflow-hidden">
+            <img 
+              [src]="getPedagogicalImage(story.pedagogical_approach)"
+              [alt]="'Metodología ' + story.pedagogical_approach"
+              class="w-full h-full object-cover transition-all duration-300 group-hover:scale-105">
+            
+            <!-- Overlay con título del cuento -->
+            <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+              <span class="text-white font-bold text-lg text-center px-4 leading-tight">
+                {{ story.title }}
+              </span>
+            </div>
             
             <!-- Botón de expandir imagen -->
             <button 
