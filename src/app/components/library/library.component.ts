@@ -72,11 +72,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response.success) {
           this.stories = response.stories || [];
-          // ✅ DEBUG: Ver qué datos llegan
-          console.log('Stories loaded:', this.stories);
-          this.stories.forEach(story => {
-            console.log(`Story "${story.title}" - target_age:`, story.target_age);
-          });
         } else {
           this.error = response.error || 'Error al cargar cuentos';
         }
@@ -237,10 +232,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.imageModalService.openModal(imageData);
   }
 
-
   getAbbreviatedAge(targetAge: string | undefined): string {
-    console.log('getAbbreviatedAge called with:', targetAge);
-
     if (!targetAge || targetAge.trim() === '') {
       return 'Sin edad';
     }
@@ -254,10 +246,8 @@ export class LibraryComponent implements OnInit, OnDestroy {
       'Sexto de Básica': '6° Básica',
       'Séptimo de Básica': '7° Básica'
     };
-
-    const result = abbreviations[targetAge] || targetAge;
-    console.log('Abbreviated result:', result);
-    return result;
+    
+    return abbreviations[targetAge] || targetAge;
   }
 
   shouldShowAgeTag(story: Story): boolean {

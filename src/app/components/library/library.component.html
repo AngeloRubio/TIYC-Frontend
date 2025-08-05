@@ -112,7 +112,7 @@
             </button>
           </div>
 
-     
+          <!--BOTÓN FIJO ABAJO -->
           <div class="p-4 flex flex-col flex-grow">
 
             <!-- Fecha de creación -->
@@ -122,7 +122,7 @@
               </span>
             </div>
 
-           
+          
             <div class="flex flex-wrap gap-2 mb-3">
               <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
                 {{ story.category }}
@@ -131,23 +131,18 @@
                 [ngClass]="getPedagogicalApproachLabel(story.pedagogical_approach).color">
                 {{ getPedagogicalApproachLabel(story.pedagogical_approach).label }}
               </span>
-             
-              <span *ngIf="shouldShowAgeTag(story)"
-                class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-tiyc-small font-bold">
-                {{ getAbbreviatedAge(story.target_age) }}
-              </span>
               
-              <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
-                DEBUG: {{ story.target_age || 'undefined' }}
+              <span *ngIf="shouldShowAgeTag(story)" class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-tiyc-small font-bold">
+                {{ getAbbreviatedAge(story.target_age) }}
               </span>
             </div>
 
-            <!-- ✅ CONTEXTO LIMITADO A 3 LÍNEAS MÁXIMO -->
+            <!--  CONTEXTO LIMITADO A 3 LÍNEAS MÁXIMO -->
             <p class="text-gray-600 text-tiyc-body leading-relaxed flex-grow mb-4 line-clamp-3">
               {{ story.context }}
             </p>
 
-            <!-- ✅ BOTÓN FIJO EN LA PARTE INFERIOR -->
+            <!--  BOTÓN FIJO EN LA PARTE INFERIOR -->
             <button (click)="viewStory(story.id); $event.stopPropagation()"
               class="btn-tiyc-primary w-full text-tiyc-body mt-auto">
               📖 Ver Cuento
