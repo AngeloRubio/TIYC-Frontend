@@ -85,7 +85,7 @@
 
         <!-- Cuentos existentes -->
         <div *ngFor="let story of getFilteredStories(); let i = index"
-          class="card-tiyc overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300"
+          class="card-tiyc overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 flex flex-col"
           (click)="viewStory(story.id)">
 
           <!-- ✨ IMAGEN DE METODOLOGÍA PEDAGÓGICA CON TÍTULO EN OVERLAY -->
@@ -114,23 +114,17 @@
             </button>
           </div>
 
-          <!-- ✅ INFORMACIÓN OPTIMIZADA (SIN TÍTULO REPETIDO) -->
-          <div class="p-4">
+          <!--  CONTENIDO CON FLEX PARA BOTÓN FIJO ABAJO -->
+          <div class="p-4 flex flex-col flex-grow">
             
-            <!-- Metadatos mejorados -->
-            <div class="flex flex-wrap gap-2 mb-3">
-              <!-- Fecha de creación -->
+            <!-- Fecha de creación -->
+            <div class="mb-3">
               <span class="text-gray-500 text-tiyc-small bg-gray-50 px-2 py-1 rounded-lg">
                 📅 {{ formatDate(story.created_at) }}
               </span>
-              
-              <!-- ✅ NUEVO: Rango de edad -->
-              <span class="text-gray-600 text-tiyc-small bg-blue-50 px-2 py-1 rounded-lg">
-                👶 {{ story.target_age }}
-              </span>
             </div>
 
-            <!-- Badges de categoría y metodología -->
+            <!--  Categoría, Metodología y Rango de Edad JUNTOS -->
             <div class="flex flex-wrap gap-2 mb-3">
               <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
                 {{ story.category }}
@@ -139,14 +133,20 @@
                 [ngClass]="getPedagogicalApproachLabel(story.pedagogical_approach).color">
                 {{ getPedagogicalApproachLabel(story.pedagogical_approach).label }}
               </span>
+              <!--  RANGO DE EDAD COMO BADGE  -->
+              <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
+                {{ story.target_age }}
+              </span>
             </div>
 
-            <!-- ✅ MEJORADO: Más espacio para la idea del docente -->
-            <p class="text-gray-600 text-tiyc-body mb-4 line-clamp-4 leading-relaxed">
+            <!-- CONTEXTO CON FLEX-GROW PARA OCUPAR ESPACIO DISPONIBLE -->
+            <p class="text-gray-600 text-tiyc-body leading-relaxed flex-grow mb-4">
               {{ story.context }}
             </p>
 
-            <button (click)="viewStory(story.id); $event.stopPropagation()" class="btn-tiyc-primary w-full text-tiyc-body">
+            <!-- BOTÓN FIJO EN LA PARTE INFERIOR -->
+            <button (click)="viewStory(story.id); $event.stopPropagation()" 
+              class="btn-tiyc-primary w-full text-tiyc-body mt-auto">
               📖 Ver Cuento
             </button>
           </div>
