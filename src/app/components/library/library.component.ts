@@ -72,6 +72,11 @@ export class LibraryComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response.success) {
           this.stories = response.stories || [];
+          // ✅ DEBUG: Ver qué datos llegan
+          console.log('Stories loaded:', this.stories);
+          this.stories.forEach(story => {
+            console.log(`Story "${story.title}" - target_age:`, story.target_age);
+          });
         } else {
           this.error = response.error || 'Error al cargar cuentos';
         }
@@ -211,7 +216,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return 'Aún no has creado ningún cuento. ¡Comienza creando tu primera historia!';
   }
 
-  //  Sistema de imágenes por metodología pedagógica
   getPedagogicalImage(approach: string): string {
     const images: { [key: string]: string } = {
       'montessori': '/assets/images/methodologies/montessori.jpg',
@@ -221,7 +225,6 @@ export class LibraryComponent implements OnInit, OnDestroy {
     return images[approach] || '/assets/images/methodologies/traditional.jpg';
   }
 
-  // Modal sin placeholder SVG
   openImageModal(story: Story, categoryIndex: number): void {
     const imageData: ImageModalData = {
       imageUrl: this.getPedagogicalImage(story.pedagogical_approach),
@@ -234,7 +237,14 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.imageModalService.openModal(imageData);
   }
 
-  getAbbreviatedAge(targetAge: string): string {
+
+  getAbbreviatedAge(targetAge: string | undefined): string {
+    console.log('getAbbreviatedAge called with:', targetAge);
+
+    if (!targetAge || targetAge.trim() === '') {
+      return 'Sin edad';
+    }
+
     const abbreviations: { [key: string]: string } = {
       'Primero de Básica': '1° Básica',
       'Segundo de Básica': '2° Básica',
@@ -244,7 +254,13 @@ export class LibraryComponent implements OnInit, OnDestroy {
       'Sexto de Básica': '6° Básica',
       'Séptimo de Básica': '7° Básica'
     };
-    return abbreviations[targetAge] || targetAge;
+
+    const result = abbreviations[targetAge] || targetAge;
+    console.log('Abbreviated result:', result);
+    return result;
   }
 
+  shouldShowAgeTag(story: Story): boolean {
+    return !!(story.target_age && story.target_age.trim() !== '');
+  }
 }
