@@ -233,4 +233,18 @@ export class LibraryComponent implements OnInit, OnDestroy {
 
     this.imageModalService.openModal(imageData);
   }
+
+  getAbbreviatedAge(targetAge: string): string {
+    const abbreviations: { [key: string]: string } = {
+      'Primero de Básica': '1° Básica',
+      'Segundo de Básica': '2° Básica',
+      'Tercero de Básica': '3° Básica',
+      'Cuarto de Básica': '4° Básica',
+      'Quinto de Básica': '5° Básica',
+      'Sexto de Básica': '6° Básica',
+      'Séptimo de Básica': '7° Básica'
+    };
+    return abbreviations[targetAge] || targetAge;
+  }
+
 }

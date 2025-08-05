@@ -124,7 +124,7 @@
               </span>
             </div>
 
-            <!--  Categoría, Metodología y Rango de Edad JUNTOS -->
+            <!-- Categoría, Metodología y Rango de Edad MEJORADO -->
             <div class="flex flex-wrap gap-2 mb-3">
               <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
                 {{ story.category }}
@@ -133,18 +133,18 @@
                 [ngClass]="getPedagogicalApproachLabel(story.pedagogical_approach).color">
                 {{ getPedagogicalApproachLabel(story.pedagogical_approach).label }}
               </span>
-              <!--  RANGO DE EDAD COMO BADGE  -->
-              <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-tiyc-small font-semibold">
-                {{ story.target_age }}
+              <!--  RANGO DE EDAD ABREVIADO Y MÁS DISTINTIVO -->
+              <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-tiyc-small font-bold">
+                {{ getAbbreviatedAge(story.target_age) }}
               </span>
             </div>
 
-            <!-- CONTEXTO CON FLEX-GROW PARA OCUPAR ESPACIO DISPONIBLE -->
-            <p class="text-gray-600 text-tiyc-body leading-relaxed flex-grow mb-4">
+            <!--  CONTEXTO LIMITADO A 3 LÍNEAS MÁXIMO -->
+            <p class="text-gray-600 text-tiyc-body leading-relaxed flex-grow mb-4 line-clamp-3">
               {{ story.context }}
             </p>
 
-            <!-- BOTÓN FIJO EN LA PARTE INFERIOR -->
+            <!--  BOTÓN FIJO EN LA PARTE INFERIOR -->
             <button (click)="viewStory(story.id); $event.stopPropagation()" 
               class="btn-tiyc-primary w-full text-tiyc-body mt-auto">
               📖 Ver Cuento
