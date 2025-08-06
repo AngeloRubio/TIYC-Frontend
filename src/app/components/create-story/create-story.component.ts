@@ -89,10 +89,6 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
   }
 
   onGenerateStory(): void {
-    // 🔍 DEBUG: Ver qué se va a enviar
-    console.log('🔍 DEBUG - formData completo antes de enviar:', this.formData);
-    console.log('🔍 DEBUG - target_age específicamente:', this.formData.target_age);
-    console.log('🔍 DEBUG - Tipo de target_age:', typeof this.formData.target_age);
 
     const validationResult = this.validateForm();
     if (!validationResult.isValid) {
