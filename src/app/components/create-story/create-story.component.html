@@ -45,34 +45,34 @@
                 {{ grade.label }}
               </option>
             </select>
+            <!-- 🔍 DEBUG: Movido DENTRO del form-field -->
+            <div class="text-sm text-gray-500 mt-1">
+              DEBUG - Valor seleccionado: {{ formData.target_age }}
+            </div>
           </div>
-          <!-- 🔍 DEBUG: Agregar esto temporalmente -->
-          <div class="text-sm text-gray-500 mt-1">
-            DEBUG - Valor seleccionado: {{ formData.target_age }}
-          </div>
-        </div>
 
-
-        <div class="form-field">
-          <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
-            🎯 Enfoque pedagógico
-          </label>
-          <div class="pedagogical-buttons">
-            <button *ngFor="let approach of pedagogicalApproaches" type="button"
-              (click)="selectPedagogicalApproach(approach.key)"
-              [class.bg-tiyc-primary]="formData.pedagogical_approach === approach.key"
-              [class.text-white]="formData.pedagogical_approach === approach.key"
-              [class.bg-gray-100]="formData.pedagogical_approach !== approach.key"
-              [class.text-tiyc-primary]="formData.pedagogical_approach !== approach.key"
-              class="transition-all duration-300 hover:shadow-md">
-              <div class="font-bold text-tiyc-body">{{ approach.label }}</div>
-              <div class="text-tiyc-small mt-1 opacity-75">{{ approach.description }}</div>
-            </button>
+          <div class="form-field">
+            <label class="block text-tiyc-primary font-bold mb-2 text-tiyc-body">
+              🎯 Enfoque pedagógico
+            </label>
+            <div class="pedagogical-buttons">
+              <button *ngFor="let approach of pedagogicalApproaches" type="button"
+                (click)="selectPedagogicalApproach(approach.key)"
+                [class.bg-tiyc-primary]="formData.pedagogical_approach === approach.key"
+                [class.text-white]="formData.pedagogical_approach === approach.key"
+                [class.bg-gray-100]="formData.pedagogical_approach !== approach.key"
+                [class.text-tiyc-primary]="formData.pedagogical_approach !== approach.key"
+                class="transition-all duration-300 hover:shadow-md">
+                <div class="font-bold text-tiyc-body">{{ approach.label }}</div>
+                <div class="text-tiyc-small mt-1 opacity-75">{{ approach.description }}</div>
+              </button>
+            </div>
           </div>
+
         </div>
 
         <div *ngIf="validationErrors.length > 0"
-          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl">
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mt-6">
           <ul class="list-disc list-inside space-y-1">
             <li *ngFor="let error of validationErrors" class="text-tiyc-body">{{ error }}</li>
           </ul>
@@ -101,196 +101,197 @@
 
       </div>
     </div>
-  </div>
 
-  <div *ngIf="viewState === 'preview'" class="preview-container animate-fadeIn">
+    <div *ngIf="viewState === 'preview'" class="preview-container animate-fadeIn">
 
-    <div class="preview-indicator">
-      <div class="bg-yellow-50 border-2 border-yellow-300 border-dashed rounded-xl p-4 mb-6">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="text-3xl lg:text-4xl text-yellow-600">👀</div>
-            <div>
-              <h3 class="text-tiyc-primary font-bold text-tiyc-subhead">Vista Previa</h3>
-              <p class="text-gray-600 text-tiyc-small">El texto no es editable. Puedes cambiar las imágenes antes de
-                guardar.</p>
+      <div class="preview-indicator">
+        <div class="bg-yellow-50 border-2 border-yellow-300 border-dashed rounded-xl p-4 mb-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="text-3xl lg:text-4xl text-yellow-600">👀</div>
+              <div>
+                <h3 class="text-tiyc-primary font-bold text-tiyc-subhead">Vista Previa</h3>
+                <p class="text-gray-600 text-tiyc-small">El texto no es editable. Puedes cambiar las imágenes antes de
+                  guardar.</p>
+              </div>
+            </div>
+            <button (click)="showForm()" class="btn-tiyc-secondary px-4 py-2 text-tiyc-body">
+              ← Volver a editar datos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+
+        <div *ngIf="previewState.status === 'generating'" class="preview-state-centered p-16">
+          <div class="text-center max-w-sm w-full">
+            <div class="text-5xl lg:text-6xl mb-6 animate-bounce">✨</div>
+            <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Creando magia literaria!</h3>
+
+            <div *ngIf="currentLoadingMessage" class="mb-6">
+              <div class="text-3xl lg:text-4xl mb-3 animate-pulse">{{ currentLoadingMessage.emoji }}</div>
+              <div class="text-tiyc-accent font-semibold text-tiyc-subhead">{{ currentLoadingMessage.text }}</div>
+            </div>
+
+            <div class="w-full bg-gray-200 rounded-full h-3 lg:h-4 mb-4 overflow-hidden">
+              <div class="bg-tiyc-primary h-3 lg:h-4 rounded-full transition-all duration-500"
+                [style.width.%]="getProgress().percentage">
+              </div>
+            </div>
+
+            <div class="text-tiyc-body text-gray-600 font-medium">
+              {{ getProgress().current }} de {{ getProgress().total }} imágenes generadas
             </div>
           </div>
-          <button (click)="showForm()" class="btn-tiyc-secondary px-4 py-2 text-tiyc-body">
-            ← Volver a editar datos
-          </button>
         </div>
-      </div>
-    </div>
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-
-      <div *ngIf="previewState.status === 'generating'" class="preview-state-centered p-16">
-        <div class="text-center max-w-sm w-full">
-          <div class="text-5xl lg:text-6xl mb-6 animate-bounce">✨</div>
-          <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Creando magia literaria!</h3>
-
-          <div *ngIf="currentLoadingMessage" class="mb-6">
-            <div class="text-3xl lg:text-4xl mb-3 animate-pulse">{{ currentLoadingMessage.emoji }}</div>
-            <div class="text-tiyc-accent font-semibold text-tiyc-subhead">{{ currentLoadingMessage.text }}</div>
+        <div *ngIf="previewState.status === 'error'" class="preview-state-centered p-16">
+          <div class="text-center max-w-sm">
+            <div class="text-5xl lg:text-6xl mb-6">😔</div>
+            <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">¡Ups! Algo salió mal</h3>
+            <p class="text-gray-600 mb-6 leading-relaxed text-tiyc-body">{{ previewState.error }}</p>
+            <button (click)="onGenerateStory()" class="btn-tiyc-secondary px-6 py-3">
+              🔄 Intentar de nuevo
+            </button>
           </div>
+        </div>
 
-          <div class="w-full bg-gray-200 rounded-full h-3 lg:h-4 mb-4 overflow-hidden">
-            <div class="bg-tiyc-primary h-3 lg:h-4 rounded-full transition-all duration-500"
-              [style.width.%]="getProgress().percentage">
+        <div *ngIf="previewState.status === 'ready' && previewState.story">
+
+          <div class="bg-tiyc-primary text-white p-6 shadow-tiyc">
+            <h1 class="text-tiyc-title font-bold mb-3 text-center">{{ previewState.story.title }}</h1>
+            <div class="flex flex-wrap justify-center gap-2 lg:gap-3 text-tiyc-small">
+              <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
+                📚 {{ previewState.story.category }}
+              </span>
+              <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
+                🎓 {{ formData.target_age }}
+              </span>
+              <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
+                🎯 {{ getPedagogicalLabel() }}
+              </span>
             </div>
           </div>
 
-          <div class="text-tiyc-body text-gray-600 font-medium">
-            {{ getProgress().current }} de {{ getProgress().total }} imágenes generadas
-          </div>
-        </div>
-      </div>
+          <div class="preview-scroll p-6">
 
-      <div *ngIf="previewState.status === 'error'" class="preview-state-centered p-16">
-        <div class="text-center max-w-sm">
-          <div class="text-5xl lg:text-6xl mb-6">😔</div>
-          <h3 class="text-red-600 font-bold text-tiyc-heading mb-4">¡Ups! Algo salió mal</h3>
-          <p class="text-gray-600 mb-6 leading-relaxed text-tiyc-body">{{ previewState.error }}</p>
-          <button (click)="onGenerateStory()" class="btn-tiyc-secondary px-6 py-3">
-            🔄 Intentar de nuevo
-          </button>
-        </div>
-      </div>
+            <div class="vertical-story-flow max-w-4xl mx-auto">
 
-      <div *ngIf="previewState.status === 'ready' && previewState.story">
+              <div *ngFor="let scenario of previewState.scenarios; let i = index" class="chapter-section mb-8">
 
-        <div class="bg-tiyc-primary text-white p-6 shadow-tiyc">
-          <h1 class="text-tiyc-title font-bold mb-3 text-center">{{ previewState.story.title }}</h1>
-          <div class="flex flex-wrap justify-center gap-2 lg:gap-3 text-tiyc-small">
-            <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
-              📚 {{ previewState.story.category }}
-            </span>
-            <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
-              🎓 {{ formData.target_age }}
-            </span>
-            <span class="bg-tiyc-primary-dark px-2 lg:px-3 py-1 rounded-full font-semibold">
-              🎯 {{ getPedagogicalLabel() }}
-            </span>
-          </div>
-        </div>
+                <div class="bg-tiyc-primary text-white rounded-t-xl p-4 shadow-tiyc">
+                  <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-tiyc-subhead">
+                      {{ getChapterTitle(i + 1) }}
+                    </h3>
 
-        <div class="preview-scroll p-6">
+                    <button *ngIf="scenario.image" (click)="onChangeImage(scenario.id)"
+                      class="bg-tiyc-primary-light hover:bg-tiyc-secondary px-4 py-2 rounded-full text-tiyc-small font-semibold transition-all duration-200 flex items-center gap-2 group">
+                      <span class="transform group-hover:rotate-180 transition-transform duration-300">🔄</span>
+                      <span>Cambiar Imagen</span>
+                    </button>
+                  </div>
+                </div>
 
-          <div class="vertical-story-flow max-w-4xl mx-auto">
+                <div class="bg-white rounded-b-xl shadow-lg overflow-hidden">
 
-            <div *ngFor="let scenario of previewState.scenarios; let i = index" class="chapter-section mb-8">
+                  <div class="story-paragraph p-6 lg:p-8 bg-gray-50">
+                    <div class="prose prose-lg max-w-none">
+                      <p class="text-gray-800 leading-relaxed text-tiyc-subhead font-serif select-none cursor-default">
+                        {{ getStoryParagraphForChapter(i) }}
+                      </p>
+                    </div>
+                  </div>
 
-              <div class="bg-tiyc-primary text-white rounded-t-xl p-4 shadow-tiyc">
-                <div class="flex justify-between items-center">
-                  <h3 class="font-bold text-tiyc-subhead">
-                    {{ getChapterTitle(i + 1) }}
-                  </h3>
+                  <div class="story-image-container relative group">
 
-                  <button *ngIf="scenario.image" (click)="onChangeImage(scenario.id)"
-                    class="bg-tiyc-primary-light hover:bg-tiyc-secondary px-4 py-2 rounded-full text-tiyc-small font-semibold transition-all duration-200 flex items-center gap-2 group">
-                    <span class="transform group-hover:rotate-180 transition-transform duration-300">🔄</span>
-                    <span>Cambiar Imagen</span>
+                    <div *ngIf="scenario.image" class="relative cursor-pointer" (click)="openImageModal(scenario, i)">
+                      <img [src]="getImageUrl(scenario.image.image_url)"
+                        [alt]="'Capítulo ' + (i + 1) + ' - ' + getChapterTitle(i + 1)"
+                        class="w-full h-64 lg:h-80 xl:h-96 object-cover transition-all duration-300 group-hover:scale-105"
+                        (error)="onImageError($event, scenario)">
+
+                      <div
+                        class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                        <div
+                          class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
+                          <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-4 shadow-lg">
+                            <svg class="w-8 h-8 text-tiyc-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+
+                      <button (click)="openImageModal(scenario, i); $event.stopPropagation()"
+                        class="absolute top-4 left-4 bg-tiyc-primary hover:bg-tiyc-primary-dark text-white rounded-full p-3 shadow-lg transition-all duration-300 transform hover:scale-110 z-10"
+                        title="Ver imagen en grande">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM15 8h.01M8 16h.01"></path>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div *ngIf="!scenario.image"
+                      class="w-full h-64 lg:h-80 xl:h-96 bg-tiyc-light flex items-center justify-center">
+                      <div class="text-center">
+                        <div class="text-4xl lg:text-5xl mb-4 animate-bounce">🎨</div>
+                        <div class="text-tiyc-primary font-bold text-tiyc-subhead mb-2">Creando imagen...</div>
+                        <div class="text-gray-600 text-tiyc-body">Capítulo {{ i + 1 }}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div *ngIf="i < previewState.scenarios.length - 1" class="chapter-separator my-8">
+                  <div class="flex items-center justify-center">
+                    <div class="h-px bg-tiyc-muted w-full max-w-xs"></div>
+                    <div class="px-4 text-tiyc-primary text-2xl">✦</div>
+                    <div class="h-px bg-tiyc-muted w-full max-w-xs"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="text-center py-8 lg:py-12 px-4 lg:px-6">
+              <div class="bg-tiyc-light rounded-xl lg:rounded-2xl p-6 lg:p-8 shadow-tiyc max-w-xl mx-auto">
+                <div class="text-4xl lg:text-6xl mb-4 lg:mb-6 animate-bounce">🌟</div>
+                <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Preview Completo!</h3>
+                <p class="text-gray-700 text-tiyc-body mb-6 leading-relaxed">
+                  Tu cuento está listo para ser guardado en tu biblioteca.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button (click)="onExportToPDF()"
+                    class="btn-tiyc-secondary flex-1 flex items-center justify-center gap-2 px-6 py-3">
+                    📄 Exportar PDF
+                  </button>
+                  <button (click)="onSaveToLibrary()" [disabled]="!canSave() || isSaving()"
+                    [class.opacity-50]="!canSave() || isSaving()"
+                    class="btn-tiyc-primary flex-1 flex items-center justify-center gap-2 px-6 py-3">
+                    <span *ngIf="!isSaving()" class="flex items-center gap-2">
+                      📚 Guardar en Biblioteca
+                    </span>
+                    <span *ngIf="isSaving()" class="flex items-center gap-2">
+                      <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                      </svg>
+                      Guardando...
+                    </span>
                   </button>
                 </div>
               </div>
-
-              <div class="bg-white rounded-b-xl shadow-lg overflow-hidden">
-
-                <div class="story-paragraph p-6 lg:p-8 bg-gray-50">
-                  <div class="prose prose-lg max-w-none">
-                    <p class="text-gray-800 leading-relaxed text-tiyc-subhead font-serif select-none cursor-default">
-                      {{ getStoryParagraphForChapter(i) }}
-                    </p>
-                  </div>
-                </div>
-
-                <div class="story-image-container relative group">
-
-                  <div *ngIf="scenario.image" class="relative cursor-pointer" (click)="openImageModal(scenario, i)">
-                    <img [src]="getImageUrl(scenario.image.image_url)"
-                      [alt]="'Capítulo ' + (i + 1) + ' - ' + getChapterTitle(i + 1)"
-                      class="w-full h-64 lg:h-80 xl:h-96 object-cover transition-all duration-300 group-hover:scale-105"
-                      (error)="onImageError($event, scenario)">
-
-                    <div
-                      class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                      <div
-                        class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 group-hover:scale-100">
-                        <div class="bg-white bg-opacity-90 backdrop-blur-sm rounded-full p-4 shadow-lg">
-                          <svg class="w-8 h-8 text-tiyc-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    <button (click)="openImageModal(scenario, i); $event.stopPropagation()"
-                      class="absolute top-4 left-4 bg-tiyc-primary hover:bg-tiyc-primary-dark text-white rounded-full p-3 shadow-lg transition-all duration-300 transform hover:scale-110 z-10"
-                      title="Ver imagen en grande">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM15 8h.01M8 16h.01"></path>
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div *ngIf="!scenario.image"
-                    class="w-full h-64 lg:h-80 xl:h-96 bg-tiyc-light flex items-center justify-center">
-                    <div class="text-center">
-                      <div class="text-4xl lg:text-5xl mb-4 animate-bounce">🎨</div>
-                      <div class="text-tiyc-primary font-bold text-tiyc-subhead mb-2">Creando imagen...</div>
-                      <div class="text-gray-600 text-tiyc-body">Capítulo {{ i + 1 }}</div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <div *ngIf="i < previewState.scenarios.length - 1" class="chapter-separator my-8">
-                <div class="flex items-center justify-center">
-                  <div class="h-px bg-tiyc-muted w-full max-w-xs"></div>
-                  <div class="px-4 text-tiyc-primary text-2xl">✦</div>
-                  <div class="h-px bg-tiyc-muted w-full max-w-xs"></div>
-                </div>
-              </div>
-
             </div>
-          </div>
 
-          <div class="text-center py-8 lg:py-12 px-4 lg:px-6">
-            <div class="bg-tiyc-light rounded-xl lg:rounded-2xl p-6 lg:p-8 shadow-tiyc max-w-xl mx-auto">
-              <div class="text-4xl lg:text-6xl mb-4 lg:mb-6 animate-bounce">🌟</div>
-              <h3 class="text-tiyc-primary font-bold text-tiyc-heading mb-4">¡Preview Completo!</h3>
-              <p class="text-gray-700 text-tiyc-body mb-6 leading-relaxed">
-                Tu cuento está listo para ser guardado en tu biblioteca.
-              </p>
-
-              <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button (click)="onExportToPDF()"
-                  class="btn-tiyc-secondary flex-1 flex items-center justify-center gap-2 px-6 py-3">
-                  📄 Exportar PDF
-                </button>
-                <button (click)="onSaveToLibrary()" [disabled]="!canSave() || isSaving()"
-                  [class.opacity-50]="!canSave() || isSaving()"
-                  class="btn-tiyc-primary flex-1 flex items-center justify-center gap-2 px-6 py-3">
-                  <span *ngIf="!isSaving()" class="flex items-center gap-2">
-                    📚 Guardar en Biblioteca
-                  </span>
-                  <span *ngIf="isSaving()" class="flex items-center gap-2">
-                    <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                      </circle>
-                      <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                      </path>
-                    </svg>
-                    Guardando...
-                  </span>
-                </button>
-              </div>
-            </div>
           </div>
 
         </div>
@@ -300,8 +301,6 @@
     </div>
 
   </div>
-
-</div>
 </div>
 
 <app-image-modal></app-image-modal>
